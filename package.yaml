@@ -1,26 +1,20 @@
 name:                AdventOfCode2022
 version:             0.1.0.0
-github:              "githubuser/AdventOfCode2022"
+github:              "borisskert/AdventOfCode2022"
 license:             BSD3
-author:              "Author name here"
-maintainer:          "example@example.com"
-copyright:           "2022 Author name here"
+author:              "Boris Skert"
+maintainer:          "boris.skert@gmail.com"
+copyright:           "2022 Boris Skert"
 
 extra-source-files:
 - README.md
-- CHANGELOG.md
 
-# Metadata used when publishing your package
-# synopsis:            Short description of your package
-# category:            Web
-
-# To avoid duplicated efforts in documentation and dealing with the
-# complications of embedding Haddock markup inside cabal files, it is
-# common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/githubuser/AdventOfCode2022#readme>
+description:         Please see the README on GitHub at <https://github.com/borisskert/AdventOfCode2022#readme>
 
 dependencies:
 - base >= 4.7 && < 5
+- stopwatch == 0.1.0.*
+- clock == 0.8.*
 
 ghc-options:
 - -Wall
@@ -57,3 +51,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - AdventOfCode2022
+    - hspec == 2.9.7
