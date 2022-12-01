@@ -1,5 +1,16 @@
-module Common.Day where
+module Common.Day (
+    Day(
+        Day,
+        run,
+        isDefault,
+        name,
+        friendlyName
+    )
+) where
 
-import System.IO
-
-data Day = Day {run :: IO (), isDefault :: Bool, name :: String, friendlyName :: String}
+data Day = Day {
+    run :: IO (),
+    isDefault :: Bool,
+    name :: String,
+    friendlyName :: String
+}
