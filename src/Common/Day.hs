@@ -1,16 +1,17 @@
-module Common.Day (
-    Day(
-        Day,
+module Common.Day
+  ( Day
+      ( Day,
         run,
         isDefault,
         name,
         friendlyName
-    )
-) where
+      ),
+  )
+where
 
-data Day = Day {
-    run :: IO (),
+data Day = Day
+  { run :: IO (),
     isDefault :: Bool,
     name :: String,
     friendlyName :: String
-}
+  }

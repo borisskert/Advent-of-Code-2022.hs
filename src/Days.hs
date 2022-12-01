@@ -6,8 +6,7 @@ import Day01.Day (day01part1, day01part2)
 
 allDays :: [Day]
 allDays =
-  [ 
-    day01part1,
+  [ day01part1,
     day01part2
   ]
 
