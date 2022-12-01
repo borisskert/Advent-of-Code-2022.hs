@@ -15,7 +15,7 @@ dependencies:
 - base >= 4.7 && < 5
 - stopwatch == 0.1.0.*
 - clock == 0.8.*
-- split == 0.2.3.5
+- split == 0.2.3.4
 
 ghc-options:
 - -Wall
@@ -52,4 +52,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - AdventOfCode2022
-    - hspec == 2.9.7
+    - hspec == 2.7.10
