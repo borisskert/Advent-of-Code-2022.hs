@@ -51,4 +51,4 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - AdventOfCode2022
-    - hspec == 2.9.7
+    - hspec == 2.7.10
