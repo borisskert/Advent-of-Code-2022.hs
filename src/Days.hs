@@ -3,11 +3,13 @@ module Days (runDays) where
 import Common.Day (Day)
 import qualified Common.Day.IO
 import Day01.Day (day01part1, day01part2)
+import Day02.Day (day02part1)
 
 allDays :: [Day]
 allDays =
   [ day01part1,
-    day01part2
+    day01part2,
+    day02part1
   ]
 
 runDays :: [String] -> IO ()
