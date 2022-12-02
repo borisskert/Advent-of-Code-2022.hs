@@ -21,7 +21,7 @@ spec = do
       score (Match Rock Paper) `shouldBe` 6 + 2
     it "A Z -> 3 (1 vs 3 -> 3 + 6)" $ do
       score (Match Rock Scissors) `shouldBe` 0 + 3
-    
+
     it "B X -> 1" $ do
       score (Match Paper Rock) `shouldBe` 0 + 1
     it "B Y -> 5" $ do
@@ -34,4 +34,4 @@ spec = do
     it "C Y -> 2" $ do
       score (Match Scissors Paper) `shouldBe` 0 + 2
     it "C Z -> 6" $ do
-       score (Match Scissors Scissors) `shouldBe` 3 + 3
+      score (Match Scissors Scissors) `shouldBe` 3 + 3
