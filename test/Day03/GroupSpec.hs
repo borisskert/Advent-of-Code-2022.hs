@@ -1,7 +1,7 @@
 module Day03.GroupSpec (spec) where
 
 import Day03.Group (Group (Group), badge, readMany)
-import Day03.Item (Item, from)
+import Day03.Item (from)
 import Day03.Rucksack (readOne)
 import Test.Hspec
 
