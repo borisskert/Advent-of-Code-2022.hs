@@ -1,4 +1,4 @@
-module Day03.Day (day03part1) where
+module Day03.Day (day03part1, day03part2) where
 
 -- https://adventofcode.com/2022/day/3
 
@@ -15,5 +15,17 @@ day03part1 =
       run = do
         input <- readFileContents "puzzleinput/day03.txt"
         let result = prioritySum input
+        print result
+    }
+
+day03part2 :: Day
+day03part2 =
+  Day
+    { name = "day03part2",
+      friendlyName = "Day 03 Part 2",
+      isDefault = True,
+      run = do
+        input <- readFileContents "puzzleinput/day03.txt"
+        let result = badgePrioritySum input
         print result
     }

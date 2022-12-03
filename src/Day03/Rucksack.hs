@@ -1,4 +1,4 @@
-module Day03.Rucksack (Rucksack (Rucksack), readOne, readMany, itemInBoth) where
+module Day03.Rucksack (Rucksack (Rucksack), readOne, readMany, itemInBoth, contains, items) where
 
 import Data.List (nub)
 import Day03.Item (Item, fromMany)
@@ -20,3 +20,9 @@ itemInBoth (Rucksack left right)
   | otherwise = Just . head $ found
   where
     found = filter (`elem` left) . nub $ right
+
+contains :: Rucksack -> Item -> Bool
+contains (Rucksack left right) i = i `elem` left || i `elem` right
+
+items :: Rucksack -> [Item]
+items (Rucksack left right) = nub left ++ nub right

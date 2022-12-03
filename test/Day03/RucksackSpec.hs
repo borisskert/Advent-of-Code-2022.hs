@@ -13,3 +13,9 @@ spec = do
   describe "Find items which apear in both compartments" $ do
     it "The only item type that appears in both compartments is lowercase p" $ do
       itemInBoth (Rucksack (fromMany "vJrwpWtwJgWr") (fromMany "hcsFMMfFFhFp")) `shouldBe` Just (from 'p')
+
+  describe "Find containing items" $ do
+    it "Should determine if a Rucksack contains an Item" $ do
+      (Rucksack (fromMany "vJrwpWtwJgWr") (fromMany "hcsFMMfFFhFp") `contains` from 'r') `shouldBe` True 
+    it "Should determine if a Rucksack does not contain an Item" $ do
+      (Rucksack (fromMany "vJrwpWtwJgWr") (fromMany "hcsFMMfFFhFp") `contains` from 'a') `shouldBe` False

@@ -1,7 +1,6 @@
 module Day03.Item (Item, from, fromMany, priority) where
 
-import Data.Char (ord, isLower, isUpper)
-
+import Data.Char (isLower, isUpper, ord)
 
 newtype Item = Item Char deriving (Show, Eq)
 
