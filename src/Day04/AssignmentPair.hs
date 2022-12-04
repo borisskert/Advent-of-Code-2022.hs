@@ -1,7 +1,7 @@
-module Day04.AssignmentPair (AssignmentPair, pairOf, readOne, readMany, isFullyContained) where
+module Day04.AssignmentPair (AssignmentPair, pairOf, readOne, readMany, isFullyContained, isOverlapped) where
 
 import Common.Split (splitPairOn)
-import Day04.Assignment (Assignment)
+import Day04.Assignment (Assignment, overlaps)
 import qualified Day04.Assignment as Assignment (contains, readOne)
 
 data AssignmentPair = AssignmentPair Assignment Assignment deriving (Show, Eq)
@@ -19,3 +19,6 @@ readMany = map readOne . lines
 
 isFullyContained :: AssignmentPair -> Bool
 isFullyContained (AssignmentPair a b) = a `Assignment.contains` b || b `Assignment.contains` a
+
+isOverlapped :: AssignmentPair -> Bool
+isOverlapped (AssignmentPair a b) = a `overlaps` b
