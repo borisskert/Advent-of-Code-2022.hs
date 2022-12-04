@@ -1,6 +1,6 @@
 module Day04.Day (day04part1, day04part2) where
 
--- https://adventofcode.com/2022/day/3
+-- https://adventofcode.com/2022/day/4
 
 import Common.Day
 import Common.TextFile (readFileContents)
