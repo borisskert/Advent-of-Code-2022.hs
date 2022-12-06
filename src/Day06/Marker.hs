@@ -8,11 +8,11 @@ size :: Marker -> Int
 size (Marker xs) = length xs
 
 isValid :: Int -> Marker -> Bool
-isValid distinct (Marker xs) = isNub . lastN distinct $ xs
+isValid n (Marker xs) = isDistinct . lastN n $ xs
 
 findIn :: Int -> String -> Maybe Marker
-findIn distinct xs =
+findIn n xs =
   safeHead
-    . filter (isValid distinct)
+    . filter (isValid n)
     . map (Marker . (`take` xs))
-    $ [distinct .. (length xs)]
+    $ [n .. (length xs)]
