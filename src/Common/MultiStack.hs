@@ -1,4 +1,4 @@
-module Common.MultiStack (MultiStack, empty, fromList, pushAt, popAt, topAt, tops, topNAt, pushNAt, popNAt) where
+module Common.MultiStack (MultiStack, empty, fromList, pushAt, popAt, topAt, top, topNAt, pushNAt, popNAt) where
 
 import Common.Stack (Stack)
 import qualified Common.Stack as Stack
@@ -30,8 +30,8 @@ popAt index (MultiStack stacks) = MultiStack newMap
 topAt :: (Ord k) => k -> MultiStack k v -> v
 topAt index (MultiStack stacks) = Stack.top . fromMaybe Stack.empty . Map.lookup index $ stacks
 
-tops :: MultiStack k v -> [v]
-tops (MultiStack stacks) = map Stack.top . Map.elems $ stacks
+top :: MultiStack k v -> [v]
+top (MultiStack stacks) = map Stack.top . Map.elems $ stacks
 
 topNAt :: (Ord k) => k -> Int -> MultiStack k v -> [v]
 topNAt index count (MultiStack stacks) = Stack.topN count . fromMaybe Stack.empty . Map.lookup index $ stacks

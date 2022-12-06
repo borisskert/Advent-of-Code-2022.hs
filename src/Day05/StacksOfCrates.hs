@@ -1,11 +1,14 @@
+{-# LANGUAGE QuasiQuotes #-}
+
 module Day05.StacksOfCrates (StacksOfCrates, readFrom, empty, move, fromList, tops, moveN) where
 
-import Common.MultiStack (MultiStack)
-import qualified Common.MultiStack as MultiStack
+import Common.MultiStack (MultiStack, popAt, popNAt, pushAt, pushNAt, top, topAt, topNAt)
+import qualified Common.MultiStack as MultiStack (empty, fromList)
 import Data.Bifunctor (second)
 import Data.Maybe (fromJust, isJust)
 import Day05.Crate (Crate, readLine)
 import Day05.Move
+import Text.RE.PCRE.String
 
 type Index = Char
 
@@ -20,60 +23,37 @@ fromList = StacksOfCrates . MultiStack.fromList
 readFrom :: [String] -> StacksOfCrates
 readFrom s = foldl (flip pushAllAt) empty indexedCrates
   where
-    indices = readIndicesFrom . last $ s
+    indices = map head . matches . (*=~ [re|[0-9]|]) . last $ s
     crates = map readLine . init $ s
     indexedCrates = reverse . map (map (second fromJust) . filter (isJust . snd) . zip indices) $ crates
 
 pushAllAt :: [(Index, Crate)] -> StacksOfCrates -> StacksOfCrates
-pushAllAt pairs stacks = foldl (\s (index, crate) -> pushAt index crate s) stacks pairs
-
-pushAt :: Index -> Crate -> StacksOfCrates -> StacksOfCrates
-pushAt index crate (StacksOfCrates stacks) = StacksOfCrates . MultiStack.pushAt index crate $ stacks
-
-readIndicesFrom :: String -> [Index]
-readIndicesFrom [] = []
-readIndicesFrom xs
-  | null leftTrimmed = []
-  | otherwise = (head leftTrimmed :) . readIndicesFrom . tail $ leftTrimmed
-  where
-    leftTrimmed = dropWhile (== ' ') xs
+pushAllAt pairs (StacksOfCrates stacks) =
+  StacksOfCrates
+    . foldl (\s (index, crate) -> pushAt index crate s) stacks
+    $ pairs
 
 move :: Move -> StacksOfCrates -> StacksOfCrates
-move m stacks
+move m stacks@(StacksOfCrates stack)
   | moveCount > 0 = move nextMove newStacks
   | otherwise = stacks
   where
     moveCount = count m
     fromIndex = from m
     toIndex = to m
-    crate = topAt fromIndex stacks
-    newStacks = pushAt toIndex crate . popAt fromIndex $ stacks
+    crate = topAt fromIndex stack
+    newStacks = StacksOfCrates . pushAt toIndex crate . popAt fromIndex $ stack
     nextMove = moveOf (moveCount - 1) fromIndex toIndex
 
-popAt :: Index -> StacksOfCrates -> StacksOfCrates
-popAt index (StacksOfCrates stacks) = StacksOfCrates . MultiStack.popAt index $ stacks
-
-topAt :: Index -> StacksOfCrates -> Crate
-topAt index (StacksOfCrates stacks) = MultiStack.topAt index stacks
-
 tops :: StacksOfCrates -> [Crate]
-tops (StacksOfCrates stacks) = MultiStack.tops stacks
+tops (StacksOfCrates stacks) = top stacks
 
 -- CrateMover 9001
 moveN :: Move -> StacksOfCrates -> StacksOfCrates
-moveN m stacks = newStacks
+moveN m (StacksOfCrates stacks) = StacksOfCrates newStack
   where
     moveCount = count m
     fromIndex = from m
     toIndex = to m
     crates = topNAt fromIndex moveCount stacks
-    newStacks = pushNAt toIndex crates . popNAt fromIndex moveCount $ stacks
-
-topNAt :: Index -> Int -> StacksOfCrates -> [Crate]
-topNAt index count' (StacksOfCrates stacks) = MultiStack.topNAt index count' stacks
-
-pushNAt :: Index -> [Crate] -> StacksOfCrates -> StacksOfCrates
-pushNAt index crates (StacksOfCrates stacks) = StacksOfCrates . MultiStack.pushNAt index crates $ stacks
-
-popNAt :: Index -> Int -> StacksOfCrates -> StacksOfCrates
-popNAt index count' (StacksOfCrates stacks) = StacksOfCrates . MultiStack.popNAt index count' $ stacks
+    newStack = pushNAt toIndex crates . popNAt fromIndex moveCount $ stacks
