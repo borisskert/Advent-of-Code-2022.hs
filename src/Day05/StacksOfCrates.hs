@@ -23,7 +23,7 @@ fromList = StacksOfCrates . MultiStack.fromList
 readFrom :: [String] -> StacksOfCrates
 readFrom s = foldl (flip pushAllAt) empty indexedCrates
   where
-    indices = map head . parseGroups [re| ([0-9])   ([0-9])   ([0-9]) |] . last $ s
+    indices = map head . parseMatches [re|([0-9])|] . last $ s
     crates = map readLine . init $ s
     indexedCrates = reverse . map (map (second fromJust) . filter (isJust . snd) . zip indices) $ crates
 
