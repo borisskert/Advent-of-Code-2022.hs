@@ -7,8 +7,12 @@ newtype Marker = Marker String deriving (Show, Eq)
 size :: Marker -> Int
 size (Marker xs) = length xs
 
-isValid :: Marker -> Bool
-isValid (Marker xs) = isNub . lastN 4 $ xs
+isValid :: Int -> Marker -> Bool
+isValid distinct (Marker xs) = isNub . lastN distinct $ xs
 
-findIn :: String -> Maybe Marker
-findIn xs = safeHead . filter isValid . map (Marker . (`take` xs)) $ [4 .. (length xs)]
+findIn :: Int -> String -> Maybe Marker
+findIn distinct xs =
+  safeHead
+    . filter (isValid distinct)
+    . map (Marker . (`take` xs))
+    $ [distinct .. (length xs)]
