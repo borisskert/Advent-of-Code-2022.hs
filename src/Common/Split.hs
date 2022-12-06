@@ -8,6 +8,6 @@ splitPairOn separator xs = (left, right)
     splitAtSeparator = splitOn separator
 
     readPair (l : r : _) = (l, r)
-    readPair _ = error "readPair: Illegal input"
+    readPair _ = error "splitPairOn.readPair: Illegal input"
 
     (left, right) = readPair . splitAtSeparator $ xs
