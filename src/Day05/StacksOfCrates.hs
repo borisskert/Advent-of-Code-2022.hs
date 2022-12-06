@@ -4,11 +4,11 @@ module Day05.StacksOfCrates (StacksOfCrates, readFrom, empty, move, fromList, to
 
 import Common.MultiStack (MultiStack, popAt, popNAt, pushAt, pushNAt, top, topAt, topNAt)
 import qualified Common.MultiStack as MultiStack (empty, fromList)
+import Common.Regex
 import Data.Bifunctor (second)
 import Data.Maybe (fromJust, isJust)
 import Day05.Crate (Crate, readLine)
 import Day05.Move
-import Text.RE.PCRE.String
 
 type Index = Char
 
@@ -23,7 +23,7 @@ fromList = StacksOfCrates . MultiStack.fromList
 readFrom :: [String] -> StacksOfCrates
 readFrom s = foldl (flip pushAllAt) empty indexedCrates
   where
-    indices = map head . matches . (*=~ [re|[0-9]|]) . last $ s
+    indices = map head . parseGroups [re| ([0-9])   ([0-9])   ([0-9]) |] . last $ s
     crates = map readLine . init $ s
     indexedCrates = reverse . map (map (second fromJust) . filter (isJust . snd) . zip indices) $ crates
 

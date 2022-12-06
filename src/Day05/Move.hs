@@ -2,7 +2,7 @@
 
 module Day05.Move (Move, count, from, to, moveOf, readOne) where
 
-import Text.RE.PCRE.String
+import Common.Regex
 
 type Index = Char
 
@@ -19,7 +19,7 @@ readOne s = Move {count = c, from = f, to = t}
 parseMoveNumbers :: String -> (Int, Char, Char)
 parseMoveNumbers s = (count', from', to')
   where
-    numbers = matches $ s *=~ [re|[0-9]+|] :: [String]
+    numbers = parseGroups [re|move ([0-9]+) from ([0-9]) to ([0-9])|] s
     count' = read . head $ numbers
     from' = head . head . tail $ numbers
     to' = head . last $ numbers
