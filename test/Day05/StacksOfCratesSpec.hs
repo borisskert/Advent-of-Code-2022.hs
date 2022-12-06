@@ -38,3 +38,20 @@ spec = do
             ('2', [crateOf 'C', crateOf 'M']),
             ('3', [crateOf 'Z', crateOf 'N', crateOf 'D', crateOf 'P'])
           ]
+
+  describe "When perform moves by CrateMover 9001" $ do
+    it "Should perform first example move" $ do
+      moveN (moveOf 1 '2' '1') exampleStacks
+        `shouldBe` fromList
+          [ ('1', [crateOf 'D', crateOf 'N', crateOf 'Z']),
+            ('2', [crateOf 'C', crateOf 'M']),
+            ('3', [crateOf 'P'])
+          ]
+
+    it "Should perform first two example moves" $ do
+      (moveN (moveOf 3 '1' '3') . moveN (moveOf 1 '2' '1') $ exampleStacks)
+        `shouldBe` fromList
+          [ ('1', []),
+            ('2', [crateOf 'C', crateOf 'M']),
+            ('3', [crateOf 'D', crateOf 'N', crateOf 'Z', crateOf 'P'])
+          ]

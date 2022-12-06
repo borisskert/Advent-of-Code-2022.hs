@@ -1,6 +1,6 @@
-module Day05.StacksOfCrates (StacksOfCrates, readFrom, empty, move, fromList, tops) where
+module Day05.StacksOfCrates (StacksOfCrates, readFrom, empty, move, fromList, tops, moveN) where
 
-import Common.Stack (Stack, pop, push, top)
+import Common.Stack (Stack, pop, popN, push, pushN, top, topN)
 import qualified Common.Stack as Stack (empty, fromList)
 import Data.Bifunctor (second)
 import qualified Data.Map as Map (Map, elems, empty, fromList, insert, lookup)
@@ -65,3 +65,28 @@ topAt index (StacksOfCrates stacks) = top . fromMaybe Stack.empty . Map.lookup i
 
 tops :: StacksOfCrates -> [Crate]
 tops (StacksOfCrates stacks) = map top . Map.elems $ stacks
+
+-- CrateMover 9001
+moveN :: Move -> StacksOfCrates -> StacksOfCrates
+moveN m stacks = newStacks
+  where
+    moveCount = count m
+    fromIndex = from m
+    toIndex = to m
+    crates = topNAt fromIndex moveCount stacks
+    newStacks = pushNAt toIndex crates . popNAt fromIndex moveCount $ stacks
+
+topNAt :: Index -> Int -> StacksOfCrates -> [Crate]
+topNAt index count' (StacksOfCrates stacks) = topN count' . fromMaybe Stack.empty . Map.lookup index $ stacks
+
+pushNAt :: Index -> [Crate] -> StacksOfCrates -> StacksOfCrates
+pushNAt index crates (StacksOfCrates stacks) = StacksOfCrates newMap
+  where
+    newStack = pushN crates . fromMaybe Stack.empty . Map.lookup index $ stacks
+    newMap = Map.insert index newStack stacks
+
+popNAt :: Index -> Int -> StacksOfCrates -> StacksOfCrates
+popNAt index count' (StacksOfCrates stacks) = StacksOfCrates newMap
+  where
+    newStack = popN count' . fromMaybe Stack.empty . Map.lookup index $ stacks
+    newMap = Map.insert index newStack stacks
