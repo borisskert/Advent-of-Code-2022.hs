@@ -1,19 +1,21 @@
 module Day05.StacksOfCrates (StacksOfCrates, readFrom, empty, move, fromList, tops, moveN) where
 
-import Common.Stack (Stack, pop, popN, push, pushN, top, topN)
-import qualified Common.Stack as Stack (empty, fromList)
+import Common.MultiStack (MultiStack)
+import qualified Common.MultiStack as MultiStack
 import Data.Bifunctor (second)
-import qualified Data.Map as Map (Map, elems, empty, fromList, insert, lookup)
-import Data.Maybe (fromJust, fromMaybe, isJust)
+import Data.Maybe (fromJust, isJust)
 import Day05.Crate (Crate, readLine)
 import Day05.Move
 
 type Index = Char
 
-newtype StacksOfCrates = StacksOfCrates (Map.Map Index (Stack Crate)) deriving (Eq, Show)
+newtype StacksOfCrates = StacksOfCrates (MultiStack Index Crate) deriving (Eq, Show)
 
 empty :: StacksOfCrates
-empty = StacksOfCrates Map.empty
+empty = StacksOfCrates MultiStack.empty
+
+fromList :: [(Index, [Crate])] -> StacksOfCrates
+fromList = StacksOfCrates . MultiStack.fromList
 
 readFrom :: [String] -> StacksOfCrates
 readFrom s = foldl (flip pushAllAt) empty indexedCrates
@@ -22,17 +24,11 @@ readFrom s = foldl (flip pushAllAt) empty indexedCrates
     crates = map readLine . init $ s
     indexedCrates = reverse . map (map (second fromJust) . filter (isJust . snd) . zip indices) $ crates
 
-pushAt :: Index -> Crate -> StacksOfCrates -> StacksOfCrates
-pushAt index crate (StacksOfCrates stacks) = StacksOfCrates newMap
-  where
-    newStack = push crate . fromMaybe Stack.empty . Map.lookup index $ stacks
-    newMap = Map.insert index newStack stacks
-
 pushAllAt :: [(Index, Crate)] -> StacksOfCrates -> StacksOfCrates
 pushAllAt pairs stacks = foldl (\s (index, crate) -> pushAt index crate s) stacks pairs
 
-fromList :: [(Index, [Crate])] -> StacksOfCrates
-fromList = StacksOfCrates . Map.fromList . map (second Stack.fromList)
+pushAt :: Index -> Crate -> StacksOfCrates -> StacksOfCrates
+pushAt index crate (StacksOfCrates stacks) = StacksOfCrates . MultiStack.pushAt index crate $ stacks
 
 readIndicesFrom :: String -> [Index]
 readIndicesFrom [] = []
@@ -55,16 +51,13 @@ move m stacks
     nextMove = moveOf (moveCount - 1) fromIndex toIndex
 
 popAt :: Index -> StacksOfCrates -> StacksOfCrates
-popAt index (StacksOfCrates stacks) = StacksOfCrates newMap
-  where
-    newStack = pop . fromMaybe Stack.empty . Map.lookup index $ stacks
-    newMap = Map.insert index newStack stacks
+popAt index (StacksOfCrates stacks) = StacksOfCrates . MultiStack.popAt index $ stacks
 
 topAt :: Index -> StacksOfCrates -> Crate
-topAt index (StacksOfCrates stacks) = top . fromMaybe Stack.empty . Map.lookup index $ stacks
+topAt index (StacksOfCrates stacks) = MultiStack.topAt index stacks
 
 tops :: StacksOfCrates -> [Crate]
-tops (StacksOfCrates stacks) = map top . Map.elems $ stacks
+tops (StacksOfCrates stacks) = MultiStack.tops stacks
 
 -- CrateMover 9001
 moveN :: Move -> StacksOfCrates -> StacksOfCrates
@@ -77,16 +70,10 @@ moveN m stacks = newStacks
     newStacks = pushNAt toIndex crates . popNAt fromIndex moveCount $ stacks
 
 topNAt :: Index -> Int -> StacksOfCrates -> [Crate]
-topNAt index count' (StacksOfCrates stacks) = topN count' . fromMaybe Stack.empty . Map.lookup index $ stacks
+topNAt index count' (StacksOfCrates stacks) = MultiStack.topNAt index count' stacks
 
 pushNAt :: Index -> [Crate] -> StacksOfCrates -> StacksOfCrates
-pushNAt index crates (StacksOfCrates stacks) = StacksOfCrates newMap
-  where
-    newStack = pushN crates . fromMaybe Stack.empty . Map.lookup index $ stacks
-    newMap = Map.insert index newStack stacks
+pushNAt index crates (StacksOfCrates stacks) = StacksOfCrates . MultiStack.pushNAt index crates $ stacks
 
 popNAt :: Index -> Int -> StacksOfCrates -> StacksOfCrates
-popNAt index count' (StacksOfCrates stacks) = StacksOfCrates newMap
-  where
-    newStack = popN count' . fromMaybe Stack.empty . Map.lookup index $ stacks
-    newMap = Map.insert index newStack stacks
+popNAt index count' (StacksOfCrates stacks) = StacksOfCrates . MultiStack.popNAt index count' $ stacks
