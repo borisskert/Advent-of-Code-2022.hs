@@ -15,7 +15,10 @@ dependencies:
 - base >= 4.7 && < 5
 - stopwatch == 0.1.0.*
 - clock == 0.8.*
-- split == 0.2.3.4
+- split == 0.2.3.*
+- containers == 0.6.5.*
+- regex-with-pcre == 1.1.0.*
+- pcre-heavy == 1.0.0.*
 
 ghc-options:
 - -Wall
