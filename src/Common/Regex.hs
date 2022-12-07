@@ -1,4 +1,4 @@
-module Common.Regex (parseGroups, parseMatches, isMatch, re) where
+module Common.Regex (parseGroups, parseMatches, isMatch, re, Regex) where
 
 import Text.Regex.PCRE.Heavy
 
