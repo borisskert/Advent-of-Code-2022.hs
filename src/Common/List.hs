@@ -1,4 +1,4 @@
-module Common.List (lastN, distinct, isDistinct, safeHead) where
+module Common.List (lastN, distinct, isDistinct, safeHead, safeTail) where
 
 import qualified Data.Set as Set (empty, insert, member)
 
@@ -28,3 +28,7 @@ isDistinct xs = (length xs ==) . length . distinct $ xs
 safeHead :: [a] -> Maybe a
 safeHead [] = Nothing
 safeHead (a : _) = Just a
+
+safeTail :: [a] -> Maybe [a]
+safeTail [] = Nothing
+safeTail (_ : as) = Just as
