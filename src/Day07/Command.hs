@@ -1,6 +1,21 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Day07.Command (readMany, cd, ls, dir, file) where
+module Day07.Command
+  ( Command,
+    LsEntry,
+    readMany,
+    cd,
+    ls,
+    dir,
+    file,
+    isCd,
+    dirname,
+    lsEntries,
+    isDir,
+    entryName,
+    entrySize,
+  )
+where
 
 import Common.Regex
 import Data.List (isPrefixOf)
@@ -11,6 +26,7 @@ data Command = ChangeDir String | ListDir [LsEntry] deriving (Eq, Show)
 
 readMany :: [String] -> [Command]
 readMany [] = []
+readMany [""] = [] -- TODO
 readMany xs = one : (readMany . drop (entries one) $ xs)
   where
     one = readOne xs
@@ -22,12 +38,16 @@ changeDirPattern :: Regex
 changeDirPattern = [re|\$ cd (.+)|]
 
 readOne :: [String] -> Command
+readOne [] = error "Command.readOne: input empty"
 readOne s
   | isChangeDir . head $ s = ChangeDir changeDirName
-  | otherwise = ListDir lsEntries
+  | otherwise = ListDir lsCmdEntries
   where
-    changeDirName = head . parseGroups changeDirPattern . head $ s
-    lsEntries = map readLsEntry . takeWhile (not . ("$ " `isPrefixOf`)) . tail $ s
+    parsed = parseGroups changeDirPattern . head $ s
+    changeDirName
+      | null parsed = error "nothing parsed"
+      | otherwise = head . parseGroups changeDirPattern . head $ s
+    lsCmdEntries = map readLsEntry . takeWhile (not . ("$ " `isPrefixOf`)) . tail $ s
 
 cd :: String -> Command
 cd = ChangeDir
@@ -52,8 +72,37 @@ readLsEntry s
   where
     filePattern = [re|([0-9]+) (.+)|]
     fileAttributes = parseGroups filePattern s
-    fileSize = read . head $ fileAttributes
+    fileSize
+      | not . null $ fileAttributes = read . head $ fileAttributes
+      | otherwise = error "File attributes null"
     filename = last fileAttributes
 
     directoryPattern = [re|dir (.+)|]
-    directoryName = head . parseGroups directoryPattern $ s
+    parsed2 = parseGroups directoryPattern s
+    directoryName
+      | null parsed2 = error "Nothing parsed 2"
+      | otherwise = head . parseGroups directoryPattern $ s
+
+isCd :: Command -> Bool
+isCd (ChangeDir _) = True
+isCd _ = False
+
+dirname :: Command -> String
+dirname (ChangeDir name) = name
+dirname _ = error "`ls` has no dirname"
+
+lsEntries :: Command -> [LsEntry]
+lsEntries (ListDir xs) = xs
+lsEntries _ = error "`cd` has no entries"
+
+isDir :: LsEntry -> Bool
+isDir (Directory _) = True
+isDir _ = False
+
+entryName :: LsEntry -> String
+entryName (Directory name) = name
+entryName (File _ name) = name
+
+entrySize :: LsEntry -> Integer
+entrySize (File size _) = size
+entrySize _ = error "Day07.Command.entrySize: Not a File"

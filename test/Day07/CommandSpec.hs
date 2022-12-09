@@ -1,4 +1,4 @@
-module Day07.Day07.CommandSpec where
+module Day07.CommandSpec (spec) where
 
 import Day07.Command
 import Test.Hspec

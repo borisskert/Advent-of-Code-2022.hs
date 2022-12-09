@@ -1,65 +1,28 @@
-{-# LANGUAGE QuasiQuotes #-}
+module Day07.Filesystem (Filesystem, fromList, empty, touch, root, size, folders) where
 
-module Day07.Filesystem (Entry, readFrom, dir, file, size) where
+import Common.Tree (Tree, insert, subtrees, elems)
+import qualified Common.Tree as Tree (empty, fromList)
 
-import Common.List
-import Common.Regex
-import Data.Maybe (fromMaybe)
+type Directory = Tree String Integer
 
-data Entry = Directory {dirname :: String, children :: [Entry], dirsize :: Integer} | File {filename :: String, filesize :: Integer} deriving (Eq, Show)
+newtype Filesystem = Filesystem Directory deriving (Eq, Show)
 
-readFrom :: String -> [Entry]
-readFrom = readFromLines . lines
+type Path = [String]
 
-readFromLines :: [String] -> [Entry]
-readFromLines [] = []
-readFromLines xs
-  | isDir . head $ xs = directory : readFromLines furtherLines
-  | isFile . head $ xs = file' : readFromLines (tail xs)
-  | otherwise = error ("Stop at: " ++ head xs)
-  where
-    directory = readDir xs
-    file' = readFileEntry . head $ xs
-    furtherLines = drop (entries directory) xs
+empty :: Filesystem
+empty = Filesystem Tree.empty
 
-isDir :: String -> Bool
-isDir = isMatch [re|- (.+) \(dir\)|]
+touch :: Path -> Integer -> Filesystem -> Filesystem
+touch path fileSize (Filesystem tree) = Filesystem . insert path fileSize $ tree
 
-isFile :: String -> Bool
-isFile = isMatch [re|- (.+) \(file, size=[0-9]+\)|]
+fromList :: [(Path, Integer)] -> Filesystem
+fromList = Filesystem . Tree.fromList
 
-isSubEntry :: String -> Bool
-isSubEntry = isMatch [re|(  )+- (.+) \(.*\)|]
+folders :: Directory -> [Directory]
+folders = tail . subtrees
 
-parseDirName :: String -> String
-parseDirName = head . parseGroups [re|- (.+) \(dir\)|]
+root :: Filesystem -> Directory
+root (Filesystem rootDir) = rootDir
 
-readDir :: [String] -> Entry
-readDir input = Directory {dirname = name, children = dirChildren, dirsize = childrenSize}
-  where
-    name = parseDirName . head $ input
-    dirChildren = readFromLines . map (drop 2) . takeWhile isSubEntry . fromMaybe [] . safeTail $ input
-    childrenSize = sum . map size $ dirChildren
-
-readFileEntry :: String -> Entry
-readFileEntry input = File {filename = myName, filesize = mySize}
-  where
-    attributes = parseGroups [re|- (.+) \(file, size=([0-9]+)\)|] input :: [String]
-    myName = head attributes
-    mySize = read . last $ attributes :: Integer
-
-dir :: String -> [Entry] -> Entry
-dir myName myEntries = Directory {dirname = myName, children = myEntries, dirsize = mySize}
-  where
-    mySize = sum . map size $ myEntries
-
-file :: String -> Integer -> Entry
-file myName mySize = File {filename = myName, filesize = mySize}
-
-size :: Entry -> Integer
-size Directory {dirname = _, children = _, dirsize = mySize} = mySize
-size File {filename = _, filesize = mySize} = mySize
-
-entries :: Entry -> Int
-entries Directory {dirname = _, children = myChildren, dirsize = _} = (+ 1) . sum . map entries $ myChildren
-entries _ = 1
+size :: Directory -> Integer
+size = sum . elems
