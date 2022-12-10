@@ -11,3 +11,8 @@ spec = do
   describe "What is the sum of the total sizes of those directories?" $ do
     it "In the example above, these directories are a and e; the sum of their total sizes is 95437 (94853 + 584)" $ do
       totalSize exampleInput `shouldBe` 95437
+
+  describe "Find the smallest directory that, if deleted, would free up enough space on the filesystem to run the update. What is the total size of that directory?" $ do
+    it "However, directories d and / are both big enough! Between these, choose the smallest: d, increasing unused space by 24933642." $ do
+      totalSizeOfDirectoryToDelete exampleInput `shouldBe` 24933642
+  

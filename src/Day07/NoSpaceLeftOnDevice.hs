@@ -1,12 +1,24 @@
 {-# LANGUAGE NumericUnderscores #-}
 
-module Day07.NoSpaceLeftOnDevice (totalSize) where
+module Day07.NoSpaceLeftOnDevice (totalSize, totalSizeOfDirectoryToDelete) where
 
 import Day07.Filesystem
 import Day07.Command
 import Day07.Bash
+import Debug.Trace (traceShow)
 
 totalSize :: String -> Integer
-totalSize input = sum . filter (<= 100_000) . map size . folders . root $ fs
+totalSize = sum . filter (<= 100_000) . map size . folders . root . readFilesystem
+
+totalSizeOfDirectoryToDelete :: String -> Integer
+totalSizeOfDirectoryToDelete input = minimum
+ . filter (>= neededSpace) . traceShow(consumedSpace, freeSpace, neededSpace) . map size . folders $ rootDir
   where
-    fs = operate . readMany . lines $ input:: Filesystem
+    rootDir = root . readFilesystem $ input
+    diskSize = 70_000_000 :: Integer
+    consumedSpace = size rootDir :: Integer
+    freeSpace = diskSize - consumedSpace :: Integer
+    neededSpace = 30_000_000 - freeSpace:: Integer
+
+readFilesystem :: String -> Filesystem
+readFilesystem input = operate . readMany . lines $ input:: Filesystem
