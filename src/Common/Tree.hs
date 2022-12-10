@@ -11,7 +11,6 @@ module Common.Tree
     subtree,
     subtrees,
     fromList,
-    isLeaf,
   )
 where
 
