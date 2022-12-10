@@ -1,6 +1,6 @@
 module Day07.Bash (operate) where
 
-import Day07.Command (Command, LsEntry, dirname, entryName, entrySize, isCd, lsEntries)
+import Day07.Command (Command, LsFile, dirname, fileName, fileSize, isCd, lsFiles)
 import Day07.Filesystem (Filesystem, empty, touch)
 
 type WorkingDir = [String]
@@ -27,13 +27,13 @@ cd changeDir (Bash cwd fs)
     name = dirname changeDir
 
 ls :: Command -> Bash -> Bash
-ls command bash = foldl (flip createEntry) bash entries
+ls command bash = foldl (flip touchFiles) bash files
   where
-    entries = lsEntries command
+    files = lsFiles command
 
-createEntry :: LsEntry -> Bash -> Bash
-createEntry lsEntry (Bash cwd fs) = Bash cwd touchedFile
+touchFiles :: LsFile -> Bash -> Bash
+touchFiles lsEntry (Bash cwd fs) = Bash cwd touchedFile
   where
-    name = entryName lsEntry
-    size = entrySize lsEntry
+    name = fileName lsEntry
+    size = fileSize lsEntry
     touchedFile = touch (cwd ++ [name]) size fs
