@@ -1,6 +1,19 @@
-module Common.Tree (
-  Tree, empty, insert, member, keys, elems, lookup, length, isEmpty, subtree, subtrees, fromList, isLeaf
-  ) where
+module Common.Tree
+  ( Tree,
+    empty,
+    insert,
+    member,
+    keys,
+    elems,
+    lookup,
+    length,
+    isEmpty,
+    subtree,
+    subtrees,
+    fromList,
+    isLeaf,
+  )
+where
 
 import Data.Map (Map, partition)
 import qualified Data.Map as Map (elems, empty, insert, keys, lookup, member, toList)

@@ -1,6 +1,6 @@
 module Day07.Filesystem (Filesystem, fromList, empty, touch, root, size, folders) where
 
-import Common.Tree (Tree, insert, subtrees, elems)
+import Common.Tree (Tree, elems, insert, subtrees)
 import qualified Common.Tree as Tree (empty, fromList)
 
 type Directory = Tree String Integer
