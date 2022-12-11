@@ -7,8 +7,6 @@ module Common.CrossGrid
     fromLines,
     lookup,
     each,
-    adjacent,
-    filter,
     toLines,
     isWithin,
     toList,
@@ -30,13 +28,12 @@ import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map (elems, empty, fromList, keys, lookup, toList)
 import Data.Maybe (fromJust, fromMaybe, isJust)
-import Prelude hiding (filter, lookup)
-import qualified Prelude (filter)
-
-type Position = (Int, Int)
+import Prelude hiding (lookup)
 
 -- (width, height)
 type Size = (Int, Int)
+
+type Position = (Int, Int)
 
 data CrossGrid a = CrossGrid Size (Map Position a) deriving (Eq, Show)
 
@@ -54,7 +51,7 @@ fromLinesIntoMap :: [[Char]] -> ((Position, Char) -> Maybe a) -> Map Position a
 fromLinesIntoMap inputLines toValue =
   Map.fromList
     . map (second fromJust)
-    . Prelude.filter (isJust . snd)
+    . filter (isJust . snd)
     . map (\(p, c) -> (p, toValue (p, c)))
     . concatMap (uncurry toLine)
     . zip [0 ..]
@@ -71,25 +68,8 @@ each mapper (CrossGrid size gridMap) = CrossGrid size newGridMap
   where
     newGridMap = Map.fromList . map mapper . Map.toList $ gridMap
 
-adjacentPositions :: Position -> [Position]
-adjacentPositions (x, y) =
-  [ (x, y - 1),
-    (x -1, y),
-    (x + 1, y),
-    (x, y + 1)
-  ]
-
-adjacent :: Position -> CrossGrid a -> [(Position, a)]
-adjacent position grid =
-  map (second fromJust)
-    . Prelude.filter (isJust . snd)
-    . map (\p -> (p, lookup p grid))
-    $ positions
-  where
-    positions = adjacentPositions position :: [Position]
-
-filter :: ((Position, a) -> Bool) -> CrossGrid a -> [(Position, a)]
-filter filterFunction (CrossGrid _ gridMap) = Prelude.filter filterFunction . Map.toList $ gridMap
+--filter :: ((Position, a) -> Bool) -> CrossGrid a -> [(Position, a)]
+--filter filterFunction (CrossGrid _ gridMap) = Prelude.filter filterFunction . Map.toList $ gridMap
 
 toLines :: (Maybe a -> Char) -> CrossGrid a -> String
 toLines toChar (CrossGrid size gridMap) =
