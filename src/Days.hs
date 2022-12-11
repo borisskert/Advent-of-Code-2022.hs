@@ -10,7 +10,7 @@ import Day05.Day (day05part1, day05part2)
 import Day06.Day (day06part1, day06part2)
 import Day07.Day (day07part1, day07part2)
 import Day08.Day (day08part1, day08part2)
-import Day09.Day (day09part1)
+import Day09.Day (day09part1, day09part2)
 
 allDays :: [Day]
 allDays =
@@ -30,7 +30,8 @@ allDays =
     day07part2,
     day08part1,
     day08part2,
-    day09part1
+    day09part1,
+    day09part2
   ]
 
 runDays :: [String] -> IO ()
