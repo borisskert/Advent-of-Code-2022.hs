@@ -118,3 +118,49 @@ spec = do
                      [(0, 3), (1, 3), (2, 3), (3, 3), (4, 3), (5, 3), (6, 3), (7, 3)],
                      [(0, 4), (1, 4), (2, 4), (3, 4), (4, 4), (5, 4), (6, 4), (7, 4)]
                    ]
+
+  describe "When accessing neigbors" $ do
+    let largerGrid =
+          fromList
+            [ "abcdefgh",
+              "ijklmnop",
+              "qrstuvwx",
+              "yz012345",
+              "6789ABCD"
+            ]
+
+    it "Should get allNorthOf (0, 0)" $ do
+      allNorthOf (0, 0) largerGrid `shouldBe` []
+
+    it "Should get allSouthOf (0, 0)" $ do
+      allSouthOf (0, 0) largerGrid `shouldBe` [(0, 1), (0, 2), (0, 3), (0, 4)]
+
+    it "Should get allWestOf (0, 0)" $ do
+      allWestOf (0, 0) largerGrid `shouldBe` []
+
+    it "Should get allEastOf (0, 0)" $ do
+      allEastOf (0, 0) largerGrid `shouldBe` [(1, 0), (2, 0), (3, 0), (4, 0), (5, 0), (6, 0), (7, 0)]
+
+    it "Should get allNorthOf (2, 3)" $ do
+      allNorthOf (2, 3) largerGrid `shouldBe` [(2, 2), (2, 1), (2, 0)]
+
+    it "Should get allSouthOf (2, 3)" $ do
+      allSouthOf (2, 3) largerGrid `shouldBe` [(2, 4)]
+
+    it "Should get allWestOf (2, 3)" $ do
+      allWestOf (2, 3) largerGrid `shouldBe` [(1, 3), (0, 3)]
+
+    it "Should get allEastOf (2, 3)" $ do
+      allEastOf (2, 3) largerGrid `shouldBe` [(3, 3), (4, 3), (5, 3), (6, 3), (7, 3)]
+
+    it "Should get allNorthOf (3, 4)" $ do
+      allNorthOf (3, 4) largerGrid `shouldBe` [(3, 3), (3, 2), (3, 1), (3, 0)]
+
+    it "Should get allSouthOf (3, 4)" $ do
+      allSouthOf (3, 4) largerGrid `shouldBe` []
+
+    it "Should get allWestOf (3, 4)" $ do
+      allWestOf (3, 4) largerGrid `shouldBe` [(2, 4), (1, 4), (0, 4)]
+
+    it "Should get allEastOf (3, 4)" $ do
+      allEastOf (3, 4) largerGrid `shouldBe` [(4, 4), (5, 4), (6, 4), (7, 4)]

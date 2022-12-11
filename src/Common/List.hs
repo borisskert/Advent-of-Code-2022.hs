@@ -1,4 +1,4 @@
-module Common.List (lastN, distinct, distinctOn, isDistinct, safeHead, groupOn, takeBy, takeOn, takeAscendingOn) where
+module Common.List (lastN, distinct, distinctOn, isDistinct, safeHead, groupOn, takeBy, takeUntil, takeOn, takeAscendingOn) where
 
 import Data.List (groupBy)
 import qualified Data.Map as Map (empty, insert, member)
@@ -53,6 +53,12 @@ takeBy cmpFn = go []
 
 takeOn :: (Ord b) => (a -> b) -> [a] -> [a]
 takeOn fn = takeBy (\a b -> fn a /= fn b)
+
+takeUntil :: (a -> Bool) -> [a] -> [a]
+takeUntil _ [] = []
+takeUntil predicate (x : xs)
+  | predicate x = [x]
+  | otherwise = x : takeUntil predicate xs
 
 takeAscending :: (Ord a) => [a] -> [a]
 takeAscending = go []

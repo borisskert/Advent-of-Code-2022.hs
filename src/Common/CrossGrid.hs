@@ -16,6 +16,11 @@ module Common.CrossGrid
     columns,
     rows,
     keys,
+    elems,
+    allNorthOf,
+    allSouthOf,
+    allWestOf,
+    allEastOf,
   )
 where
 
@@ -23,7 +28,7 @@ import Common.List
 import Data.Bifunctor (second)
 import Data.List (intercalate, sortOn)
 import Data.Map (Map)
-import qualified Data.Map as Map (empty, fromList, keys, lookup, toList)
+import qualified Data.Map as Map (empty, fromList, keys, lookup, toList, elems)
 import Data.Maybe (fromJust, fromMaybe, isJust)
 import Data.Ord (Down)
 import Prelude hiding (filter, lookup)
@@ -142,3 +147,18 @@ columns (CrossGrid (width, height) _) = map (\x -> map (x,) [0 .. height - 1]) [
 
 keys :: CrossGrid a -> [Position]
 keys (CrossGrid _ gridMap) = Map.keys gridMap
+
+elems :: CrossGrid a -> [a]
+elems (CrossGrid _ gridMap) = Map.elems gridMap
+
+allNorthOf :: Position -> CrossGrid a -> [Position]
+allNorthOf (x, y) _ = map (x,) [(y - 1), (y - 2) .. 0]
+
+allSouthOf :: Position -> CrossGrid a -> [Position]
+allSouthOf (x, y) (CrossGrid (_, height) _) = map (x,) [y + 1 .. (height - 1)]
+
+allWestOf :: Position -> CrossGrid a -> [Position]
+allWestOf (x, y) _ = map (,y) [(x - 1), (x - 2) .. 0]
+
+allEastOf :: Position -> CrossGrid a -> [Position]
+allEastOf (x, y) (CrossGrid (width, _) _) = map (,y) [x + 1 .. (width - 1)]
