@@ -1,5 +1,19 @@
-module Common.List (lastN, distinct, isDistinct, safeHead) where
+module Common.List
+  ( lastN,
+    distinct,
+    distinctOn,
+    isDistinct,
+    safeHead,
+    groupOn,
+    takeUntil,
+    takeAscending,
+    takeAscendingBy,
+    takeAscendingOn,
+  )
+where
 
+import Data.List (groupBy)
+import qualified Data.Map as Map (empty, insert, member)
 import qualified Data.Set as Set (empty, insert, member)
 
 --  https://stackoverflow.com/a/17253092
@@ -21,6 +35,14 @@ distinct = create Set.empty
       | otherwise = x : create (Set.insert x s) xs'
     create _ _ = []
 
+distinctOn :: (Ord b) => (a -> b) -> [a] -> [a]
+distinctOn fn = create Map.empty
+  where
+    create s (x : xs')
+      | fn x `Map.member` s = create s xs'
+      | otherwise = x : create (Map.insert (fn x) x s) xs'
+    create _ _ = []
+
 isDistinct :: Ord a => [a] -> Bool
 isDistinct xs = (length xs ==) . length . distinct $ xs
 
@@ -28,3 +50,39 @@ isDistinct xs = (length xs ==) . length . distinct $ xs
 safeHead :: [a] -> Maybe a
 safeHead [] = Nothing
 safeHead (a : _) = Just a
+
+groupOn :: (Eq b) => (a -> b) -> [a] -> [[a]]
+groupOn get = groupBy (\a b -> get a == get b)
+
+takeUntil :: (a -> Bool) -> [a] -> [a]
+takeUntil _ [] = []
+takeUntil predicate (x : xs)
+  | predicate x = [x]
+  | otherwise = x : takeUntil predicate xs
+
+takeAscending :: (Ord a) => [a] -> [a]
+takeAscending = go []
+  where
+    go [] (x : xs) = go [x] xs
+    go ys [] = ys
+    go ys (x : xs)
+      | last ys < x = go (ys ++ [x]) xs
+      | otherwise = go ys xs
+
+takeAscendingBy :: (a -> a -> Ordering) -> [a] -> [a]
+takeAscendingBy cmpFn = go []
+  where
+    go [] (x : xs) = go [x] xs
+    go ys [] = ys
+    go ys (x : xs)
+      | cmpFn (last ys) x == LT = go (ys ++ [x]) xs
+      | otherwise = go ys xs
+
+takeAscendingOn :: (Ord b) => (a -> b) -> [a] -> [a]
+takeAscendingOn fn = go []
+  where
+    go [] (x : xs) = go [x] xs
+    go ys [] = ys
+    go ys (x : xs)
+      | fn (last ys) < fn x = go (ys ++ [x]) xs
+      | otherwise = go ys xs
