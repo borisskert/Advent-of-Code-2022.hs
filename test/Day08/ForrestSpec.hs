@@ -62,11 +62,3 @@ spec = do
 
     it "This tree's scenic score is 8 (2 * 2 * 1 * 2); this is the ideal spot for the tree house." $ do
       scenicScore (tree (2, 3) 5) exampleForrest `shouldBe` 8
-
---   fromList
---    [ [3, 0, 3, 7, 3],
---      [2, 5, 5, 1, 2],
---      [6, 5, 3, 3, 2],
---      [3, 3, 5, 4, 9],
---      [3, 5, 3, 9, 0]
---    ]

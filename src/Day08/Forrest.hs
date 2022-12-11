@@ -13,12 +13,11 @@ module Day08.Forrest
   )
 where
 
-import Common.CrossGrid (CrossGrid, allEastOf, allNorthOf, allSouthOf, allWestOf, columns, rows, elems)
+import Common.CrossGrid (CrossGrid, allEastOf, allNorthOf, allSouthOf, allWestOf, columns, elems, rows)
 import qualified Common.CrossGrid as CrossGrid (fromLines, fromList, lookup, mapGrid)
-import Common.List (distinctOn, groupOn, takeAscendingOn, takeUntil)
+import Common.List (distinctOn, takeAscendingOn, takeUntil)
 import Data.Char (digitToInt)
 import Data.Maybe (mapMaybe)
-import Debug.Trace (traceShow)
 
 type Position = (Int, Int)
 
@@ -38,7 +37,7 @@ tree :: Position -> Height -> Tree
 tree = Tree
 
 allTrees :: Forrest -> [Tree]
-allTrees (Forrest grid )= elems grid
+allTrees (Forrest grid) = elems grid
 
 visibleFromNorth :: Forrest -> [[Tree]]
 visibleFromNorth (Forrest grid) = map (visible . mapMaybe (`CrossGrid.lookup` grid)) . columns $ grid
@@ -71,33 +70,23 @@ visibleTrees forrest =
     ]
 
 scenicScore :: Tree -> Forrest -> Int
-scenicScore (Tree pos _) forrest =
+scenicScore ourTree forrest =
   product . map length $
-    [ visibleNorthOf pos forrest,
-      visibleSouthOf pos forrest,
-      visibleWestOf pos forrest,
-      visibleEastOf pos forrest
+    [ visibleFrom allNorthOf ourTree forrest,
+      visibleFrom allSouthOf ourTree forrest,
+      visibleFrom allWestOf ourTree forrest,
+      visibleFrom allEastOf ourTree forrest
     ]
 
-visibleNorthOf :: Position -> Forrest -> [Tree]
-visibleNorthOf pos (Forrest grid) = visibleUntil maxHeight . mapMaybe (`CrossGrid.lookup` grid) . allNorthOf pos $ grid
+visibleFrom :: (Position -> CrossGrid Tree -> [Position]) -> Tree -> Forrest -> [Tree]
+visibleFrom getTrees ourTree (Forrest grid) =
+  visibleUntil maxHeight
+    . mapMaybe (`CrossGrid.lookup` grid)
+    . getTrees pos
+    $ grid
   where
-    maxHeight = maybe 0 height . CrossGrid.lookup pos $ grid
-
-visibleSouthOf :: Position -> Forrest -> [Tree]
-visibleSouthOf pos (Forrest grid) = visibleUntil maxHeight . mapMaybe (`CrossGrid.lookup` grid) . allSouthOf pos $ grid
-  where
-    maxHeight = maybe 0 height . CrossGrid.lookup pos $ grid
-
-visibleWestOf :: Position -> Forrest -> [Tree]
-visibleWestOf pos (Forrest grid) = visibleUntil maxHeight . mapMaybe (`CrossGrid.lookup` grid) . allWestOf pos $ grid
-  where
-    maxHeight = maybe 0 height . CrossGrid.lookup pos $ grid
-
-visibleEastOf :: Position -> Forrest -> [Tree]
-visibleEastOf pos (Forrest grid) = visibleUntil maxHeight . mapMaybe (`CrossGrid.lookup` grid) . allEastOf pos $ grid
-  where
-    maxHeight = maybe 0 height . CrossGrid.lookup pos $ grid
+    maxHeight = height ourTree
+    pos = position ourTree
 
 visibleUntil :: Height -> [Tree] -> [Tree]
 visibleUntil maxHeight = takeUntil ((>= maxHeight) . height)

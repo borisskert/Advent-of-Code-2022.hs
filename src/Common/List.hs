@@ -1,4 +1,16 @@
-module Common.List (lastN, distinct, distinctOn, isDistinct, safeHead, groupOn, takeBy, takeUntil, takeOn, takeAscendingOn) where
+module Common.List
+  ( lastN,
+    distinct,
+    distinctOn,
+    isDistinct,
+    safeHead,
+    groupOn,
+    takeUntil,
+    takeAscending,
+    takeAscendingBy,
+    takeAscendingOn,
+  )
+where
 
 import Data.List (groupBy)
 import qualified Data.Map as Map (empty, insert, member)
@@ -41,18 +53,6 @@ safeHead (a : _) = Just a
 
 groupOn :: (Eq b) => (a -> b) -> [a] -> [[a]]
 groupOn get = groupBy (\a b -> get a == get b)
-
-takeBy :: (a -> a -> Bool) -> [a] -> [a]
-takeBy cmpFn = go []
-  where
-    go [] (x : xs) = go [x] xs
-    go ys [] = ys
-    go ys (x : xs)
-      | cmpFn (last ys) x = go (ys ++ [x]) xs
-      | otherwise = ys
-
-takeOn :: (Ord b) => (a -> b) -> [a] -> [a]
-takeOn fn = takeBy (\a b -> fn a /= fn b)
 
 takeUntil :: (a -> Bool) -> [a] -> [a]
 takeUntil _ [] = []

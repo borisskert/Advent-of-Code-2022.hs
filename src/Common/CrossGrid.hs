@@ -26,11 +26,10 @@ where
 
 import Common.List
 import Data.Bifunctor (second)
-import Data.List (intercalate, sortOn)
+import Data.List (intercalate)
 import Data.Map (Map)
-import qualified Data.Map as Map (empty, fromList, keys, lookup, toList, elems)
+import qualified Data.Map as Map (elems, empty, fromList, keys, lookup, toList)
 import Data.Maybe (fromJust, fromMaybe, isJust)
-import Data.Ord (Down)
 import Prelude hiding (filter, lookup)
 import qualified Prelude (filter)
 
