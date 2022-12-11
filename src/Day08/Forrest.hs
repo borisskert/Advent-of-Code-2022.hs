@@ -45,4 +45,10 @@ position :: Tree -> Position
 position (Tree p _) = p
 
 visibleTrees :: Forrest -> [Tree]
-visibleTrees forrest = distinctOn position . concatMap concat $ [visibleFromNorth forrest, visibleFromSouth forrest, visibleFromWest forrest, visibleFromEast forrest]
+visibleTrees forrest =
+  distinctOn position . concatMap concat $
+    [ visibleFromNorth forrest,
+      visibleFromSouth forrest,
+      visibleFromWest forrest,
+      visibleFromEast forrest
+    ]

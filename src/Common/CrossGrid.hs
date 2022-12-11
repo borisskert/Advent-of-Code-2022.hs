@@ -15,13 +15,15 @@ module Common.CrossGrid
     mapGrid,
     columns,
     rows,
+    keys,
   )
 where
 
 import Common.List
 import Data.Bifunctor (second)
 import Data.List (intercalate, sortOn)
-import qualified Data.Map (Map, empty, fromList, lookup, toList)
+import Data.Map (Map)
+import qualified Data.Map as Map (empty, fromList, keys, lookup, toList)
 import Data.Maybe (fromJust, fromMaybe, isJust)
 import Data.Ord (Down)
 import Prelude hiding (filter, lookup)
@@ -32,10 +34,10 @@ type Position = (Int, Int)
 -- (width, height)
 type Size = (Int, Int)
 
-data CrossGrid a = CrossGrid Size (Data.Map.Map Position a) deriving (Eq, Show)
+data CrossGrid a = CrossGrid Size (Map Position a) deriving (Eq, Show)
 
 empty :: CrossGrid a
-empty = CrossGrid (0, 0) Data.Map.empty
+empty = CrossGrid (0, 0) Map.empty
 
 fromLines :: ((Position, Char) -> Maybe a) -> String -> CrossGrid a
 fromLines toValue input = CrossGrid size gridMap
@@ -44,9 +46,9 @@ fromLines toValue input = CrossGrid size gridMap
     gridMap = fromLinesIntoMap inputLines toValue
     size = (maybe 0 length . safeHead $ inputLines, length inputLines)
 
-fromLinesIntoMap :: [[Char]] -> ((Position, Char) -> Maybe a) -> Data.Map.Map Position a
+fromLinesIntoMap :: [[Char]] -> ((Position, Char) -> Maybe a) -> Map Position a
 fromLinesIntoMap inputLines toValue =
-  Data.Map.fromList
+  Map.fromList
     . map (second fromJust)
     . Prelude.filter (isJust . snd)
     . map (\(p, c) -> (p, toValue (p, c)))
@@ -58,12 +60,12 @@ fromLinesIntoMap inputLines toValue =
     toLine y line = zipWith (\x c -> ((x, y), c)) [0 ..] line
 
 lookup :: Position -> CrossGrid a -> Maybe a
-lookup position (CrossGrid _ gridMap) = Data.Map.lookup position gridMap
+lookup position (CrossGrid _ gridMap) = Map.lookup position gridMap
 
 each :: ((Position, a) -> (Position, a)) -> CrossGrid a -> CrossGrid a
 each mapper (CrossGrid size gridMap) = CrossGrid size newGridMap
   where
-    newGridMap = Data.Map.fromList . map mapper . Data.Map.toList $ gridMap
+    newGridMap = Map.fromList . map mapper . Map.toList $ gridMap
 
 adjacentPositions :: Position -> [Position]
 adjacentPositions (x, y) =
@@ -83,12 +85,12 @@ adjacent position grid =
     positions = adjacentPositions position :: [Position]
 
 filter :: ((Position, a) -> Bool) -> CrossGrid a -> [(Position, a)]
-filter filterFunction (CrossGrid _ gridMap) = Prelude.filter filterFunction . Data.Map.toList $ gridMap
+filter filterFunction (CrossGrid _ gridMap) = Prelude.filter filterFunction . Map.toList $ gridMap
 
 toLines :: (Maybe a -> Char) -> CrossGrid a -> String
 toLines toChar (CrossGrid size gridMap) =
   intercalate "\n"
-    . map (\y -> map (toChar . (`Data.Map.lookup` gridMap) . (,y)) xs)
+    . map (\y -> map (toChar . (`Map.lookup` gridMap) . (,y)) xs)
     $ ys
   where
     (width, height) = size
@@ -108,7 +110,7 @@ fromList list = CrossGrid size gridMap
   where
     size = (maybe 0 length . safeHead $ list, length list)
     gridMap =
-      Data.Map.fromList
+      Map.fromList
         . concatMap (uncurry toLine)
         . zip [0 ..]
         $ list
@@ -117,7 +119,7 @@ fromList list = CrossGrid size gridMap
     toLine y line = zipWith (\x c -> ((x, y), c)) [0 ..] line
 
 toList :: a -> CrossGrid a -> [[a]]
-toList nil (CrossGrid size gridMap) = map (map (fromMaybe nil . (`Data.Map.lookup` gridMap))) positions
+toList nil (CrossGrid size gridMap) = map (map (fromMaybe nil . (`Map.lookup` gridMap))) positions
   where
     positions = positionsFrom size
 
@@ -130,10 +132,13 @@ positionsFrom (width, height) = map (\y -> map (,y) xs) ys
 mapGrid :: (Position -> a -> b) -> CrossGrid a -> CrossGrid b
 mapGrid fn (CrossGrid size gridMap) = CrossGrid size newGridMap
   where
-    newGridMap = Data.Map.fromList . map (\(pos, x) -> (pos, fn pos x)) . Data.Map.toList $ gridMap
+    newGridMap = Map.fromList . map (\(pos, x) -> (pos, fn pos x)) . Map.toList $ gridMap
 
 rows :: CrossGrid a -> [[Position]]
 rows (CrossGrid (width, height) _) = map (\y -> map (,y) [0 .. width - 1]) [0 .. height - 1]
 
 columns :: CrossGrid a -> [[Position]]
 columns (CrossGrid (width, height) _) = map (\x -> map (x,) [0 .. height - 1]) [0 .. width - 1]
+
+keys :: CrossGrid a -> [Position]
+keys (CrossGrid _ gridMap) = Map.keys gridMap
