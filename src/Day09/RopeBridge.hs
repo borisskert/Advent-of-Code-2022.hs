@@ -1,7 +1,7 @@
 module Day09.RopeBridge (howManyTailPositions) where
 
-import Day09.Move
-import qualified Day09.Snake as Snake
+import Day09.Motion
+import Day09.Simulation
 
 howManyTailPositions :: Int -> String -> Int
-howManyTailPositions size = length . Snake.visited . foldl (flip Snake.perform) (Snake.create size) . readMany
+howManyTailPositions size = length . visited . foldl (flip perform) (create size) . readMany

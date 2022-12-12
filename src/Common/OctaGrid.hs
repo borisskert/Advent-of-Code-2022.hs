@@ -38,7 +38,7 @@ lookup :: Position -> OctaGrid a -> Maybe a
 lookup position (OctaGrid _ gridMap) = Map.lookup position gridMap
 
 insert :: Position -> a -> OctaGrid a -> OctaGrid a
-insert pos v (OctaGrid size gridMap) = OctaGrid size . Map.insert pos v $ gridMap
+insert pos value (OctaGrid size gridMap) = OctaGrid size . Map.insert pos value $ gridMap
 
 insertWith :: (a -> a -> a) -> Position -> a -> OctaGrid a -> OctaGrid a
 insertWith fn pos value (OctaGrid size gridMap) = OctaGrid size . Map.insertWith fn pos value $ gridMap

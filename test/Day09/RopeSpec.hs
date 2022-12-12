@@ -1,7 +1,12 @@
-module Day09.SnakeSpec (spec) where
+module Day09.RopeSpec (spec) where
 
-import Day09.Snake
+import Common.OctaGrid (Position)
+import Day09.Rope (fromList, toList)
+import qualified Day09.Rope as Rope (moveTail)
 import Test.Hspec
+
+moveTail :: Position -> [Position] -> [Position]
+moveTail headPos = toList . Rope.moveTail headPos . fromList
 
 spec :: Spec
 spec = do

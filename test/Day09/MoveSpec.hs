@@ -1,7 +1,7 @@
 module Day09.MoveSpec (spec) where
 
 import Test.Hspec
-import Day09.Move
+import Day09.Motion
 
 exampleInput :: String
 exampleInput = "R 4\nU 4\nL 3\nD 1\nR 4\nD 1\nL 5\nR 2"
