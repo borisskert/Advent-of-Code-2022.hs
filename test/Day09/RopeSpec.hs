@@ -1,12 +1,12 @@
 module Day09.RopeSpec (spec) where
 
-import Common.OctaGrid (Position)
+import Common.OctaGridPosition (fromTuple, toTuple)
 import Day09.Rope (fromList, toList)
 import qualified Day09.Rope as Rope (moveTail)
 import Test.Hspec
 
-moveTail :: Position -> [Position] -> [Position]
-moveTail headPos = toList . Rope.moveTail headPos . fromList
+moveTail :: (Int, Int) -> [(Int, Int)] -> [(Int, Int)]
+moveTail headPos = map toTuple . toList . Rope.moveTail (fromTuple headPos) . fromList . map fromTuple
 
 spec :: Spec
 spec = do

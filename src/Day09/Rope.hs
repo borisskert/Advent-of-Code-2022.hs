@@ -1,6 +1,6 @@
 module Day09.Rope (Rope, fromList, toList, moveTail, tag, headOf) where
 
-import Common.OctaGrid (Position, areAdjacent)
+import Common.OctaGridPosition (Position, areAdjacent, fromTuple, toTuple)
 
 type Knot = Position
 
@@ -19,10 +19,10 @@ move :: Knot -> [Knot] -> [Knot]
 move _ [] = []
 move motion [_] = [motion]
 move motion (_ : knot : xs) =
-  (motionX, motionY) : move knotMotion (knot : xs)
+  motion : move knotMotion (knot : xs)
   where
-    (motionX, motionY) = motion
-    (knotX, knotY) = knot
+    (motionX, motionY) = toTuple motion
+    (knotX, knotY) = toTuple knot
 
     diffX = motionX - knotX
     diffY = motionY - knotY
@@ -34,7 +34,7 @@ move motion (_ : knot : xs) =
       | areAdjacent motion knot = knotY
       | otherwise = knotY + signum diffY
 
-    knotMotion = (knotMotionX, knotMotionY)
+    knotMotion = fromTuple (knotMotionX, knotMotionY)
 
 tag :: Rope -> Knot
 tag (Rope knots) = last knots

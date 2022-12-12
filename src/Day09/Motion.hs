@@ -1,5 +1,6 @@
 module Day09.Motion (Direction, Motion, up, down, left, right, readMany, go) where
 
+import Common.OctaGridPosition
 import Common.Split
 
 type Steps = Int
@@ -35,10 +36,8 @@ readOne s = create direction
 readMany :: String -> [Motion]
 readMany = map readOne . lines
 
-type Position = (Int, Int)
-
 go :: Motion -> Position -> [Position]
-go (Motion U steps) (x, y) = map (\s -> (x, y + s)) [1 .. steps]
-go (Motion D steps) (x, y) = map (\s -> (x, y - s)) [1 .. steps]
-go (Motion R steps) (x, y) = map (\s -> (x + s, y)) [1 .. steps]
-go (Motion L steps) (x, y) = map (\s -> (x - s, y)) [1 .. steps]
+go (Motion U steps) pos = stepsNorth steps pos
+go (Motion D steps) pos = stepsSouth steps pos
+go (Motion R steps) pos = stepsEast steps pos
+go (Motion L steps) pos = stepsWest steps pos

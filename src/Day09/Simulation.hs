@@ -1,6 +1,6 @@
 module Day09.Simulation (Simulation, create, perform, visited, moveTail) where
 
-import Common.OctaGrid (Position)
+import Common.OctaGridPosition (Position, fromTuple)
 import Data.Set (Set)
 import qualified Data.Set as Set (empty, insert, toList)
 import Day09.Motion (Motion)
@@ -12,8 +12,9 @@ data Simulation = Simulation (Set Position) Rope
 create :: Int -> Simulation
 create ropeLength = Simulation logbook rope
   where
-    logbook = Set.insert (0, 0) Set.empty
-    rope = fromList . map (const (0, 0)) $ [0 .. ropeLength]
+    start = fromTuple (0, 0)
+    logbook = Set.insert start Set.empty
+    rope = fromList . map (const start) $ [0 .. ropeLength]
 
 perform :: Motion -> Simulation -> Simulation
 perform motion sim@(Simulation _ rope) = foldl (flip move) sim motions

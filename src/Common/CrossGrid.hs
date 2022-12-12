@@ -68,9 +68,6 @@ each mapper (CrossGrid size gridMap) = CrossGrid size newGridMap
   where
     newGridMap = Map.fromList . map mapper . Map.toList $ gridMap
 
---filter :: ((Position, a) -> Bool) -> CrossGrid a -> [(Position, a)]
---filter filterFunction (CrossGrid _ gridMap) = Prelude.filter filterFunction . Map.toList $ gridMap
-
 toLines :: (Maybe a -> Char) -> CrossGrid a -> String
 toLines toChar (CrossGrid size gridMap) =
   intercalate "\n"
