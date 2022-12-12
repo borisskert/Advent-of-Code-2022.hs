@@ -17,40 +17,34 @@ module Common.OctaGridPosition
   )
 where
 
-data Position = Position {x :: Int, y :: Int} deriving (Eq, Show, Ord)
+import Common.Vector2D
 
-fromTuple :: (Int, Int) -> Position
-fromTuple (myX, myY) = Position {x = myX, y = myY}
+data Position = Position Int Int deriving (Eq, Show, Ord)
 
-toTuple :: Position -> (Int, Int)
-toTuple Position {x = myX, y = myY} = (myX, myY)
+instance Vector2D Position where
+  x (Position myX _) = myX
+  y (Position _ myY) = myY
+  north (Position myX myY) = Position myX (myY + 1)
+  south (Position myX myY) = Position myX (myY - 1)
+  west (Position myX myY) = Position (myX - 1) myY
+  east (Position myX myY) = Position (myX + 1) myY
+  toTuple (Position myX myY) = (myX, myY)
+  fromTuple (myX, myY) = Position myX myY
 
 adjacent :: Position -> [Position]
-adjacent Position {x = myX, y = myY} =
-  [ Position {x = myX - 1, y = myY - 1},
-    Position {x = myX, y = myY - 1},
-    Position {x = myX + 1, y = myY - 1},
-    Position {x = myX -1, y = myY},
-    Position {x = myX + 1, y = myY},
-    Position {x = myX - 1, y = myY + 1},
-    Position {x = myX, y = myY + 1},
-    Position {x = myX + 1, y = myY + 1}
+adjacent (Position myX myY) =
+  [ Position (myX - 1) (myY - 1),
+    Position myX (myY - 1),
+    Position (myX + 1) (myY - 1),
+    Position (myX - 1) myY,
+    Position (myX + 1) myY,
+    Position (myX - 1) (myY + 1),
+    Position myX (myY + 1),
+    Position (myX + 1) (myY + 1)
   ]
 
 areAdjacent :: Position -> Position -> Bool
 areAdjacent pos other = other `elem` adjacent pos
-
-north :: Position -> Position
-north Position {x = myX, y = myY} = Position {x = myX, y = myY + 1}
-
-south :: Position -> Position
-south Position {x = myX, y = myY} = Position {x = myX, y = myY - 1}
-
-west :: Position -> Position
-west Position {x = myX, y = myY} = Position {x = myX -1, y = myY}
-
-east :: Position -> Position
-east Position {x = myX, y = myY} = Position {x = myX + 1, y = myY}
 
 stepsNorth :: Int -> Position -> [Position]
 stepsNorth steps pos = scanl (\p _ -> north p) pos [1 .. steps]

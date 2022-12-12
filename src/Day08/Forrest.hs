@@ -13,43 +13,48 @@ module Day08.Forrest
   )
 where
 
-import Common.CrossGrid (CrossGrid, allEastOf, allNorthOf, allSouthOf, allWestOf, columns, elems, rows)
-import qualified Common.CrossGrid as CrossGrid (fromLines, fromList, lookup, mapGrid)
+import Common.Grid (Grid, GridValue, allEastOf, allNorthOf, allSouthOf, allWestOf, columns, elems, fromValue, rows, toValue)
+import qualified Common.Grid as Grid (fromLines, fromList, lookup, mapGrid)
 import Common.List (distinctOn, takeAscendingOn, takeUntil)
+import Common.OctaGridPosition
 import Data.Char (digitToInt)
 import Data.Maybe (mapMaybe)
-
-type Position = (Int, Int)
 
 type Height = Int
 
 data Tree = Tree Position Int deriving (Eq, Show)
 
-newtype Forrest = Forrest (CrossGrid Tree) deriving (Eq, Show)
+instance GridValue Tree where
+  toValue (_, '_') = Nothing
+  toValue (pos, c) = Just . tree (toTuple pos) . digitToInt $c
+  fromValue (Just (Tree _ h)) = head . show $ h
+  fromValue Nothing = '_'
+
+newtype Forrest = Forrest (Grid Position Tree) deriving (Eq, Show)
 
 readFrom :: String -> Forrest
-readFrom = Forrest . CrossGrid.fromLines (\(pos, c) -> Just . tree pos . digitToInt $c)
+readFrom = Forrest . Grid.fromLines
 
 fromList :: [[Int]] -> Forrest
-fromList = Forrest . CrossGrid.mapGrid Tree . CrossGrid.fromList
+fromList = Forrest . Grid.mapGrid Tree . Grid.fromList
 
-tree :: Position -> Height -> Tree
-tree = Tree
+tree :: (Int, Int) -> Height -> Tree
+tree = Tree . fromTuple
 
 allTrees :: Forrest -> [Tree]
 allTrees (Forrest grid) = elems grid
 
 visibleFromNorth :: Forrest -> [[Tree]]
-visibleFromNorth (Forrest grid) = map (visible . mapMaybe (`CrossGrid.lookup` grid)) . columns $ grid
+visibleFromNorth (Forrest grid) = map (visible . mapMaybe (`Grid.lookup` grid)) . columns $ grid
 
 visibleFromWest :: Forrest -> [[Tree]]
-visibleFromWest (Forrest grid) = map (visible . mapMaybe (`CrossGrid.lookup` grid)) . rows $ grid
+visibleFromWest (Forrest grid) = map (visible . mapMaybe (`Grid.lookup` grid)) . rows $ grid
 
 visibleFromSouth :: Forrest -> [[Tree]]
-visibleFromSouth (Forrest grid) = map (visible . mapMaybe (`CrossGrid.lookup` grid) . reverse) . columns $ grid
+visibleFromSouth (Forrest grid) = map (visible . mapMaybe (`Grid.lookup` grid) . reverse) . columns $ grid
 
 visibleFromEast :: Forrest -> [[Tree]]
-visibleFromEast (Forrest grid) = map (visible . mapMaybe (`CrossGrid.lookup` grid) . reverse) . rows $ grid
+visibleFromEast (Forrest grid) = map (visible . mapMaybe (`Grid.lookup` grid) . reverse) . rows $ grid
 
 height :: Tree -> Height
 height (Tree _ h) = h
@@ -78,10 +83,10 @@ scenicScore ourTree forrest =
       visibleFrom allEastOf ourTree forrest
     ]
 
-visibleFrom :: (Position -> CrossGrid Tree -> [Position]) -> Tree -> Forrest -> [Tree]
+visibleFrom :: (Position -> Grid Position Tree -> [Position]) -> Tree -> Forrest -> [Tree]
 visibleFrom getTrees ourTree (Forrest grid) =
   visibleUntil maxHeight
-    . mapMaybe (`CrossGrid.lookup` grid)
+    . mapMaybe (`Grid.lookup` grid)
     . getTrees pos
     $ grid
   where
