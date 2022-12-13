@@ -1,26 +1,26 @@
-module Common.CrossGridSpec (spec) where
+module Common.GridSpec (spec) where
 
-import Common.CrossGrid
+import Common.GridSpec.TestGrid
 import Test.Hspec
 import Prelude hiding (lookup)
 
 spec :: Spec
 spec = do
-  describe "When read CrossGrid from lines" $ do
-    it "Should read empty CrossGrid" $ do
-      fromLines (\(_, c) -> Just c) "" `shouldBe` empty
+  describe "When read Grid from lines" $ do
+    it "Should read empty Grid" $ do
+      fromLines "" `shouldBe` empty
 
     it "Should read single char" $ do
-      fromLines (\(_, c) -> Just c) "c" `shouldBe` fromList [['c']]
+      fromLines "c" `shouldBe` fromList [['c']]
 
     it "Should read small grid" $ do
-      fromLines (\(_, c) -> Just c) "ab\ncd\nef" `shouldBe` fromList ["ab", "cd", "ef"]
+      fromLines "ab\ncd\nef" `shouldBe` fromList ["ab", "cd", "ef"]
 
     it "Should read medium grid" $ do
-      fromLines (\(_, c) -> Just c) "abc\ndef\nghi" `shouldBe` fromList ["abc", "def", "ghi"]
+      fromLines "abc\ndef\nghi" `shouldBe` fromList ["abc", "def", "ghi"]
 
     it "Should read larger grid" $ do
-      fromLines (\(_, c) -> Just c) "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD"
+      fromLines "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD"
         `shouldBe` fromList
           [ "abcdefgh",
             "ijklmnop",
@@ -29,15 +29,15 @@ spec = do
             "6789ABCD"
           ]
 
-  describe "When exporting CrossGrid toList" $ do
-    it "Should create empty list from empty CrossGrid" $ do
-      toList '_' (empty :: CrossGrid Char) `shouldBe` []
+  describe "When exporting Grid toList" $ do
+    it "Should create empty list from empty Grid" $ do
+      toList empty `shouldBe` []
 
-    it "Should create single char list from single char CrossGrid" $ do
-      toList '_' (fromList [['c']]) `shouldBe` [['c']]
+    it "Should create single char list from single char Grid" $ do
+      toList (fromList [['c']]) `shouldBe` [['c']]
 
-    it "Should create larger char list from larger char CrossGrid" $ do
-      toList '_' (fromLines (\(_, c) -> Just c) "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD")
+    it "Should create larger char list from larger char Grid" $ do
+      toList (fromLines "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD")
         `shouldBe` [ "abcdefgh",
                      "ijklmnop",
                      "qrstuvwx",
