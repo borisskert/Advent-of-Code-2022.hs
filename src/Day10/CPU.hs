@@ -1,33 +1,30 @@
-module Day10.CPU (CPU, simple, load, executeUntil, signalStrength) where
+module Day10.CPU (CPU, simple, load, ticks, tick, signalStrength) where
 
-import Day10.Instruction (Instruction)
+import Common.Fold (times)
 import qualified Day10.Instruction as Instruction (cycles, execute)
 import Day10.Program
+import Debug.Trace (traceShow)
 
-data CPU = CPU {x :: Int, counter :: Int, program :: Program}
+data CPU = CPU {x :: Int, cycles :: Int, counter :: Int, program :: Program}
 
 simple :: CPU
-simple = CPU {x = 1, counter = 0, program = empty}
+simple = CPU {x = 1, cycles = 0, counter = 0, program = empty}
 
 load :: Program -> CPU -> CPU
-load programToLoad CPU {x = cpuX, counter = cpuCounter} = CPU {x = cpuX, counter = cpuCounter, program = programToLoad}
+load programToLoad CPU {x = cpuX, cycles = cpuCycles, counter = cpuCounter} =
+  CPU {x = cpuX, cycles = cpuCycles, counter = cpuCounter, program = programToLoad}
 
-executeUntil :: Int -> CPU -> CPU
-executeUntil count cpu@CPU {counter = cpuCounter, program = loadedProgram}
-  | count <= 0 = cpu
-  | count <= neededCycles = CPU {x = x cpu, counter = cpuCounter + count, program = loadedProgram}
-  | otherwise = executeUntil (count - neededCycles) newCpu
+ticks :: Int -> CPU -> CPU
+ticks n cpu = times tick cpu n
+
+tick :: CPU -> CPU
+tick CPU {x = cpuX, cycles = cpuCycles, counter = cpuCounter, program = loadedProgram}
+  | cpuCycles >= neededCycles = CPU {x = changedX, cycles = 1, counter = cpuCounter + 1, program = remaining loadedProgram}
+  | otherwise = traceShow (cpuX, cpuCycles, cpuCounter) CPU {x = cpuX, cycles = cpuCycles + 1, counter = cpuCounter + 1, program = loadedProgram}
   where
     instruction = current loadedProgram
     neededCycles = Instruction.cycles instruction
-    newCpu = execute instruction cpu
-
-execute :: Instruction -> CPU -> CPU
-execute instruction CPU {x = registerX, counter = cpuCounter, program = cpuProgram} =
-  (CPU {x = changedX, counter = newCounter, program = remaining cpuProgram})
-  where
-    changedX = Instruction.execute registerX instruction
-    newCounter = cpuCounter + Instruction.cycles instruction
+    changedX = Instruction.execute cpuX instruction
 
 signalStrength :: CPU -> Int
 signalStrength CPU {x = x', counter = cpuCounter} = cpuCounter * x'
