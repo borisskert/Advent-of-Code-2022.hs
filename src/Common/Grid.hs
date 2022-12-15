@@ -39,7 +39,6 @@ import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map (elems, empty, fromList, insert, keys, lookup, toList)
 import Data.Maybe (fromJust, isJust, mapMaybe)
-import Debug.Trace (traceShow)
 import Prelude hiding (lookup)
 
 type Range = (Int, Int)

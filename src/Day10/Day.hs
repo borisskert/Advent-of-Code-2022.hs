@@ -28,5 +28,5 @@ day10part2 =
       run = do
         input <- readFileContents "puzzleinput/day10.txt"
         let result = crtOutput input
-        printf "\n%s" result
+        printf "\n%s\n" result
     }

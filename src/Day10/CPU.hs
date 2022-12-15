@@ -27,11 +27,11 @@ tick CPU {x = cpuX, cycles = cpuCycles, counter = cpuCounter, program = loadedPr
 
 run :: CPU -> CPU
 run cpu@CPU {program = loadedProgram}
- | isFinished loadedProgram = cpu
- | otherwise = run . tick $ cpu
+  | isFinished loadedProgram = cpu
+  | otherwise = run . tick $ cpu
 
 isIdle :: CPU -> Bool
-isIdle cpu@CPU {program = loadedProgram} = isFinished loadedProgram
+isIdle CPU {program = loadedProgram} = isFinished loadedProgram
 
 signalStrength :: CPU -> Int
 signalStrength CPU {x = x', counter = cpuCounter} = cpuCounter * x'
