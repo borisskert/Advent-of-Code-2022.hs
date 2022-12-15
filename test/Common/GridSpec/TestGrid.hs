@@ -15,6 +15,7 @@ module Common.GridSpec.TestGrid
     allWestOf,
     allEastOf,
     insert,
+    subgrid,
   )
 where
 
@@ -37,6 +38,7 @@ import qualified Common.Grid as Grid
     lookup,
     rows,
     toList,
+    subgrid,
   )
 import qualified Common.Grid as GridValue (fromValue, toValue)
 import Common.OctaGridPosition
@@ -92,3 +94,6 @@ allEastOf pos grid = map toTuple . (`Grid.allEastOf` grid) . fromTuple $ pos
 
 insert :: (Int, Int) -> Char -> Grid Position TestValue -> Grid Position TestValue
 insert pos value = Grid.insert (fromTuple pos) (TestValue value)
+
+subgrid :: (Int, Int) -> (Int, Int) -> Grid Position TestValue -> Grid Position TestValue
+subgrid pos = Grid.subgrid (fromTuple pos)

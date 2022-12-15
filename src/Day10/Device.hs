@@ -20,9 +20,10 @@ ticks n device = times tick device n
 
 tick :: Device -> Device
 tick Device {cpu = deviceCPU, screen = deviceScreen, cycles = deviceCycles} =
-  Device {cpu = CPU.tick deviceCPU, screen = nextScreen, cycles = deviceCycles + 1}
+  Device {cpu = nextCpu, screen = nextScreen, cycles = deviceCycles + 1}
   where
-    spritePosition = register deviceCPU
+    nextCpu = CPU.tick deviceCPU
+    spritePosition = register nextCpu
     nextScreen = draw spritePosition deviceScreen
 
 run :: Device -> Device

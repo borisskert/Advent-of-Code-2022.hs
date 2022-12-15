@@ -1,7 +1,7 @@
 module Day10.Screen (Screen, empty, draw, toLines) where
 
 import Common.Grid (Grid, Position, Value, fromTuple, fromValue, toTuple, toValue, x, y)
-import qualified Common.Grid as Grid (empty, insert, toLines)
+import qualified Common.Grid as Grid (empty, insert, subgrid, toLines)
 import Common.Tuple
 import Debug.Trace (traceShow)
 
@@ -14,8 +14,11 @@ instance Position PixelPosition where
   fromTuple (x', y') = PixelPosition x' y'
 
 fromCycle :: Int -> PixelPosition
-fromCycle = fromTuple . (\x -> traceShow (x) x) . flipTuple . (`divMod` 40)
-  where
+fromCycle n = fromTuple . flipTuple . (`divMod` 40) $ n
+
+--fromCycle n = fromTuple (posX, posY `mod` 6)
+--  where
+--    (posY, posX) = (`divMod` 40) n
 
 newtype PixelValue = PixelValue Bool deriving (Eq)
 
@@ -36,15 +39,18 @@ draw spritePosition Screen {pixels = grid, cycles = screenCycles} = Screen {pixe
   where
     position = fromCycle screenCycles
     ledPosition = (`mod` 40) screenCycles
-    isLed = (spritePosition + 1) `elem` [
-            ledPosition - 1,
-        ledPosition,
-        ledPosition + 1
---        ledPosition + 2
---        ledPosition + 3
-        ]
+    isLed =
+      (spritePosition)
+        `elem` [
+                 --            ledPosition - 2,
+                 ledPosition - 1,
+                 ledPosition,
+                 ledPosition + 1
+                 --        ledPosition + 2
+                 --        ledPosition + 3
+               ]
     pixel = PixelValue isLed
-    nextGrid = Grid.insert position pixel grid
+    nextGrid = Grid.insert position pixel . traceShow ("screenCycles", screenCycles, "ledpostion", ledPosition, "isLed", isLed, "position", toTuple position) $ grid
 
 toLines :: Screen -> String
-toLines Screen {pixels = grid} = Grid.toLines grid
+toLines Screen {pixels = grid} = Grid.toLines . Grid.subgrid (fromTuple (0, 0)) (40, 6) $ grid

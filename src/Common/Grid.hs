@@ -29,6 +29,7 @@ module Common.Grid
     insert,
     width,
     height,
+    subgrid,
   )
 where
 
@@ -37,7 +38,8 @@ import Data.Bifunctor (second)
 import Data.List (intercalate)
 import Data.Map (Map)
 import qualified Data.Map as Map (elems, empty, fromList, insert, keys, lookup, toList)
-import Data.Maybe (fromJust, isJust)
+import Data.Maybe (fromJust, isJust, mapMaybe)
+import Debug.Trace (traceShow)
 import Prelude hiding (lookup)
 
 type Range = (Int, Int)
@@ -170,3 +172,14 @@ width (Grid ((minX, maxX), _) _) = maxX - minX + 1
 
 height :: Grid p a -> Int
 height (Grid (_, (minY, maxY)) _) = maxY - minY + 1
+
+subgrid :: (Position p, Ord p) => p -> (Int, Int) -> Grid p a -> Grid p a
+subgrid pos (width', height') grid = newGrid
+  where
+    (posX, posY) = toTuple pos
+    xs = [posX .. (posX + width' - 1)]
+    ys = [posY .. (posY + height' - 1)]
+    positions = [fromTuple (x', y') | x' <- xs, y' <- ys]
+    lookupValue position = fmap (position,) . lookup position $ grid
+    pairs = mapMaybe lookupValue positions
+    newGrid = foldl (\g (k, v) -> insert k v g) empty pairs
