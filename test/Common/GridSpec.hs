@@ -1,61 +1,106 @@
 module Common.GridSpec (spec) where
 
-import Common.Grid (height, width)
+import Common.Grid (Grid, height, width)
 import Common.GridSpec.TestGrid
+import Common.OctaGridPosition (Position)
 import Test.Hspec
 import Prelude hiding (lookup)
+
+largerGrid :: Grid Position TestValue
+largerGrid =
+  fromList
+    [ ((0, 0), 'a'),
+      ((0, 1), 'i'),
+      ((0, 2), 'q'),
+      ((0, 3), 'y'),
+      ((0, 4), '6'),
+      ((1, 0), 'b'),
+      ((1, 1), 'j'),
+      ((1, 2), 'r'),
+      ((1, 3), 'z'),
+      ((1, 4), '7'),
+      ((2, 0), 'c'),
+      ((2, 1), 'k'),
+      ((2, 2), 's'),
+      ((2, 3), '0'),
+      ((2, 4), '8'),
+      ((3, 0), 'd'),
+      ((3, 1), 'l'),
+      ((3, 2), 't'),
+      ((3, 3), '1'),
+      ((3, 4), '9'),
+      ((4, 0), 'e'),
+      ((4, 1), 'm'),
+      ((4, 2), 'u'),
+      ((4, 3), '2'),
+      ((4, 4), 'A'),
+      ((5, 0), 'f'),
+      ((5, 1), 'n'),
+      ((5, 2), 'v'),
+      ((5, 3), '3'),
+      ((5, 4), 'B'),
+      ((6, 0), 'g'),
+      ((6, 1), 'o'),
+      ((6, 2), 'w'),
+      ((6, 3), '4'),
+      ((6, 4), 'C'),
+      ((7, 0), 'h'),
+      ((7, 1), 'p'),
+      ((7, 2), 'x'),
+      ((7, 3), '5'),
+      ((7, 4), 'D')
+    ]
 
 spec :: Spec
 spec = do
   describe "When read Grid from lines" $ do
     it "Should read empty Grid" $ do
-      fromLines "" `shouldBe` empty
+      read "" `shouldBe` empty
 
     it "Should read single char" $ do
-      fromLines "c" `shouldBe` fromList [['c']]
+      read "c" `shouldBe` fromList [((0, 0), 'c')]
 
     it "Should read small grid" $ do
-      fromLines "ab\ncd\nef" `shouldBe` fromList ["ab", "cd", "ef"]
+      read "ab\ncd\nef"
+        `shouldBe` fromList
+          [ ((0, 0), 'a'),
+            ((1, 0), 'b'),
+            ((0, 1), 'c'),
+            ((1, 1), 'd'),
+            ((0, 2), 'e'),
+            ((1, 2), 'f')
+          ]
 
     it "Should read medium grid" $ do
-      fromLines "abc\ndef\nghi" `shouldBe` fromList ["abc", "def", "ghi"]
+      read "abc\ndef\nghi"
+        `shouldBe` fromList
+          [ ((0, 0), 'a'),
+            ((1, 0), 'b'),
+            ((2, 0), 'c'),
+            ((0, 1), 'd'),
+            ((1, 1), 'e'),
+            ((2, 1), 'f'),
+            ((0, 2), 'g'),
+            ((1, 2), 'h'),
+            ((2, 2), 'i')
+          ]
 
     it "Should read larger grid" $ do
-      fromLines "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD"
-        `shouldBe` fromList
-          [ "abcdefgh",
-            "ijklmnop",
-            "qrstuvwx",
-            "yz012345",
-            "6789ABCD"
-          ]
+      read "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD"
+        `shouldBe` largerGrid
 
   describe "When exporting Grid toList" $ do
     it "Should create empty list from empty Grid" $ do
       toList empty `shouldBe` []
 
     it "Should create single char list from single char Grid" $ do
-      toList (fromList [['c']]) `shouldBe` [['c']]
+      toList (fromList [((0, 0), 'c')]) `shouldBe` [((0, 0), 'c')]
 
     it "Should create larger char list from larger char Grid" $ do
-      toList (fromLines "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD")
-        `shouldBe` [ "abcdefgh",
-                     "ijklmnop",
-                     "qrstuvwx",
-                     "yz012345",
-                     "6789ABCD"
-                   ]
+      toList (read "abcdefgh\nijklmnop\nqrstuvwx\nyz012345\n6789ABCD")
+        `shouldBe` [((0, 0), 'a'), ((0, 1), 'i'), ((0, 2), 'q'), ((0, 3), 'y'), ((0, 4), '6'), ((1, 0), 'b'), ((1, 1), 'j'), ((1, 2), 'r'), ((1, 3), 'z'), ((1, 4), '7'), ((2, 0), 'c'), ((2, 1), 'k'), ((2, 2), 's'), ((2, 3), '0'), ((2, 4), '8'), ((3, 0), 'd'), ((3, 1), 'l'), ((3, 2), 't'), ((3, 3), '1'), ((3, 4), '9'), ((4, 0), 'e'), ((4, 1), 'm'), ((4, 2), 'u'), ((4, 3), '2'), ((4, 4), 'A'), ((5, 0), 'f'), ((5, 1), 'n'), ((5, 2), 'v'), ((5, 3), '3'), ((5, 4), 'B'), ((6, 0), 'g'), ((6, 1), 'o'), ((6, 2), 'w'), ((6, 3), '4'), ((6, 4), 'C'), ((7, 0), 'h'), ((7, 1), 'p'), ((7, 2), 'x'), ((7, 3), '5'), ((7, 4), 'D')]
 
   describe "When accessing by coordinates" $ do
-    let largerGrid =
-          fromList
-            [ "abcdefgh",
-              "ijklmnop",
-              "qrstuvwx",
-              "yz012345",
-              "6789ABCD"
-            ]
-
     it "Should access (0, 0)" $ do
       lookup (0, 0) largerGrid `shouldBe` Just 'a'
 
@@ -90,15 +135,6 @@ spec = do
       lookup (0, 8) largerGrid `shouldBe` Nothing
 
   describe "When access columns and rows" $ do
-    let largerGrid =
-          fromList
-            [ "abcdefgh",
-              "ijklmnop",
-              "qrstuvwx",
-              "yz012345",
-              "6789ABCD"
-            ]
-
     it "Should provide all columns" $ do
       columns largerGrid
         `shouldBe` [ [(0, 0), (0, 1), (0, 2), (0, 3), (0, 4)],
@@ -122,21 +158,9 @@ spec = do
 
     it "Should provide subgrid" $ do
       (toList . subgrid (2, 2) (2, 3) $ largerGrid)
-        `shouldBe` [ "st",
-                     "01",
-                     "89"
-                   ]
+        `shouldBe` [((2, 2), 's'), ((2, 3), '0'), ((2, 4), '8'), ((3, 2), 't'), ((3, 3), '1'), ((3, 4), '9')]
 
   describe "When accessing neigbors" $ do
-    let largerGrid =
-          fromList
-            [ "abcdefgh",
-              "ijklmnop",
-              "qrstuvwx",
-              "yz012345",
-              "6789ABCD"
-            ]
-
     it "Should get allNorthOf (0, 0)" $ do
       allNorthOf (0, 0) largerGrid `shouldBe` []
 
@@ -183,7 +207,7 @@ spec = do
       height one `shouldBe` 1
 
     it "Should export toList" $ do
-      toList one `shouldBe` [['a']]
+      toList one `shouldBe` [((3, 4), 'a')]
 
     describe "When inserting second item" $ do
       let two = insert (5, 2) 'b' one
@@ -195,8 +219,4 @@ spec = do
         height two `shouldBe` 3
 
       it "Should extend Grid" $ do
-        toList two
-          `shouldBe` [ "__b",
-                       "___",
-                       "a__"
-                     ]
+        show two `shouldBe` "__b\n___\na__"

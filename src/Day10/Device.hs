@@ -1,7 +1,7 @@
-module Day10.Device (Device, crtDevice, load, ticks, tick, run, signalStrength, screenOutput) where
+module Day10.Device (Device, crtDevice, load, ticks, run, signalStrength) where
 
 import Common.Fold (times)
-import Day10.CPU (CPU, register, simple, isIdle)
+import Day10.CPU (CPU, isIdle, register, simple)
 import qualified Day10.CPU as CPU (load, signalStrength, tick)
 import Day10.Program (Program)
 import Day10.Screen
@@ -34,5 +34,5 @@ run device@Device {cpu = deviceCPU}
 signalStrength :: Device -> Int
 signalStrength Device {cpu = deviceCPU} = CPU.signalStrength deviceCPU
 
-screenOutput :: Device -> String
-screenOutput Device {screen = deviceScreen} = toLines deviceScreen
+instance Show Device where
+  show Device {screen = deviceScreen} = show deviceScreen

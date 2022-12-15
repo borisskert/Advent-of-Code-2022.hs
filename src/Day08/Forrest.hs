@@ -1,7 +1,5 @@
 module Day08.Forrest
   ( Forrest,
-    readFrom,
-    fromList,
     tree,
     allTrees,
     visibleFromNorth,
@@ -13,8 +11,22 @@ module Day08.Forrest
   )
 where
 
-import Common.Grid (Grid, Value, allEastOf, allNorthOf, allSouthOf, allWestOf, columns, elems, fromTuple, fromValue, rows, toTuple, toValue)
-import qualified Common.Grid as Grid (fromLines, fromList, lookup, mapGrid)
+import Common.Grid
+  ( Grid,
+    Value,
+    allEastOf,
+    allNorthOf,
+    allSouthOf,
+    allWestOf,
+    columns,
+    elems,
+    fromTuple,
+    fromValue,
+    rows,
+    toTuple,
+    toValue,
+  )
+import qualified Common.Grid as Grid (lookup)
 import Common.List (distinctOn, takeAscendingOn, takeUntil)
 import Common.OctaGridPosition
 import Data.Char (digitToInt)
@@ -32,11 +44,10 @@ instance Value Tree where
 
 newtype Forrest = Forrest (Grid Position Tree) deriving (Eq, Show)
 
-readFrom :: String -> Forrest
-readFrom = Forrest . Grid.fromLines
-
-fromList :: [[Int]] -> Forrest
-fromList = Forrest . Grid.mapGrid Tree . Grid.fromList
+instance Read Forrest where
+  readsPrec _ input = [(forrest, [])]
+    where
+      forrest = Forrest . read $ input
 
 tree :: (Int, Int) -> Height -> Tree
 tree = Tree . fromTuple

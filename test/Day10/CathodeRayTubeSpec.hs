@@ -26,4 +26,4 @@ spec = do
 
   describe "Render the image given by your program. What eight capital letters appear on your CRT?" $ do
     it "Allowing the program to run to completion causes the CRT to produce the following image:" $ do
-      crtOutput exampleInput `shouldBe` expectedImage
+      screenOutput exampleInput `shouldBe` expectedImage

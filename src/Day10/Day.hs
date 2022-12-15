@@ -27,6 +27,6 @@ day10part2 =
       isDefault = True,
       run = do
         input <- readFileContents "puzzleinput/day10.txt"
-        let result = crtOutput input
+        let result = screenOutput input
         printf "\n%s\n" result
     }

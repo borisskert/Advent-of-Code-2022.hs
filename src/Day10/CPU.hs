@@ -1,6 +1,5 @@
-module Day10.CPU (CPU, simple, load, ticks, tick, run, isIdle, signalStrength, register) where
+module Day10.CPU (CPU, simple, load, tick, run, isIdle, signalStrength, register) where
 
-import Common.Fold (times)
 import qualified Day10.Instruction as Instruction (cycles, execute)
 import Day10.Program
 
@@ -12,9 +11,6 @@ simple = CPU {x = 1, cycles = 0, counter = 0, program = empty}
 load :: Program -> CPU -> CPU
 load programToLoad CPU {x = cpuX, cycles = cpuCycles, counter = cpuCounter} =
   CPU {x = cpuX, cycles = cpuCycles, counter = cpuCounter, program = programToLoad}
-
-ticks :: Int -> CPU -> CPU
-ticks n cpu = times tick cpu n
 
 tick :: CPU -> CPU
 tick CPU {x = cpuX, cycles = cpuCycles, counter = cpuCounter, program = loadedProgram}

@@ -1,6 +1,6 @@
-module Day10.CPUSpec (spec) where
+module Day10.DeviceSpec (spec) where
 
-import Day10.CPU
+import Day10.Device
 import Day10.Program
 import Test.Hspec
 
@@ -13,19 +13,19 @@ spec = do
     let program = read exampleInput :: Program
 
     it "During the 20th cycle, register X has the value 21, so the signal strength is 20 * 21 = 420" $ do
-      (signalStrength . ticks 20 . load program $ simple) `shouldBe` 420
+      (signalStrength . ticks 20 . load program $ crtDevice) `shouldBe` 420
 
     it "During the 60th cycle, register X has the value 19, so the signal strength is 60 * 19 = 1140." $ do
-      (signalStrength . ticks 60 . load program $ simple) `shouldBe` 1140
+      (signalStrength . ticks 60 . load program $ crtDevice) `shouldBe` 1140
 
     it "During the 100th cycle, register X has the value 18, so the signal strength is 100 * 18 = 1800." $ do
-      (signalStrength . ticks 100 . load program $ simple) `shouldBe` 1800
+      (signalStrength . ticks 100 . load program $ crtDevice) `shouldBe` 1800
 
     it "During the 140th cycle, register X has the value 21, so the signal strength is 140 * 21 = 2940." $ do
-      (signalStrength . ticks 140 . load program $ simple) `shouldBe` 2940
+      (signalStrength . ticks 140 . load program $ crtDevice) `shouldBe` 2940
 
     it "During the 180th cycle, register X has the value 16, so the signal strength is 180 * 16 = 2880." $ do
-      (signalStrength . ticks 180 . load program $ simple) `shouldBe` 2880
+      (signalStrength . ticks 180 . load program $ crtDevice) `shouldBe` 2880
 
     it "During the 220th cycle, register X has the value 18, so the signal strength is 220 * 18 = 3960." $ do
-      (signalStrength . ticks 220 . load program $ simple) `shouldBe` 3960
+      (signalStrength . ticks 220 . load program $ crtDevice) `shouldBe` 3960

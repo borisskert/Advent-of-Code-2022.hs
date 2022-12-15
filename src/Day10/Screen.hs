@@ -1,7 +1,7 @@
-module Day10.Screen (Screen, empty, draw, toLines) where
+module Day10.Screen (Screen, empty, draw) where
 
 import Common.Grid (Grid, Position, Value, fromTuple, fromValue, toTuple, toValue, x, y)
-import qualified Common.Grid as Grid (empty, insert, subgrid, toLines)
+import qualified Common.Grid as Grid (empty, insert, subgrid)
 import Common.Tuple
 
 data PixelPosition = PixelPosition Int Int deriving (Eq, Ord)
@@ -36,18 +36,21 @@ empty :: Screen
 empty = Screen {pixels = Grid.empty, cycles = 0}
 
 draw :: Int -> Screen -> Screen
-draw spritePosition Screen {pixels = grid, cycles = screenCycles} = Screen {pixels = nextGrid, cycles = screenCycles + 1}
+draw spritePosition screen@Screen {pixels = grid, cycles = screenCycles} = Screen {pixels = nextGrid, cycles = screenCycles + 1}
   where
     position = fromCycle screenCycles
-    ledPosition = (`mod` screenColumns) screenCycles
-    isLed =
-      spritePosition
-        `elem` [ ledPosition - 1,
-                 ledPosition,
-                 ledPosition + 1
-               ]
-    pixel = PixelValue isLed
+    pixel = PixelValue (isLit spritePosition screen)
     nextGrid = Grid.insert position pixel grid
 
-toLines :: Screen -> String
-toLines Screen {pixels = grid} = Grid.toLines . Grid.subgrid (fromTuple (0, 0)) (screenColumns, screenLines) $ grid
+isLit :: Int -> Screen -> Bool
+isLit spritePosition Screen {cycles = screenCycles} =
+  spritePosition
+    `elem` [ ledPosition - 1,
+             ledPosition,
+             ledPosition + 1
+           ]
+  where
+    ledPosition = (`mod` screenColumns) screenCycles
+
+instance Show Screen where
+  show Screen {pixels = grid} = show . Grid.subgrid (fromTuple (0, 0)) (screenColumns, screenLines) $ grid

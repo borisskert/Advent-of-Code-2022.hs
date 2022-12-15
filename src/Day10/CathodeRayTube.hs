@@ -1,4 +1,4 @@
-module Day10.CathodeRayTube (signalStrengthSum, crtOutput) where
+module Day10.CathodeRayTube (signalStrengthSum, screenOutput) where
 
 import Day10.Device
 
@@ -8,8 +8,8 @@ signalStrengthSum input = sum . map (signalStrength . (`ticks` device)) $ [20, 6
     program = read input
     device = load program crtDevice
 
-crtOutput :: String -> String
-crtOutput input = screenOutput . run $ device
+screenOutput :: String -> String
+screenOutput input = show . run $ device
   where
     program = read input
     device = load program crtDevice
