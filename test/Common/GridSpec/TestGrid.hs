@@ -4,7 +4,6 @@ module Common.GridSpec.TestGrid
     toChar,
     fromChar,
     empty,
-    fromLines,
     fromList,
     toList,
     lookup,
@@ -14,10 +13,17 @@ module Common.GridSpec.TestGrid
     allSouthOf,
     allWestOf,
     allEastOf,
+    insert,
+    subgrid,
   )
 where
 
-import Common.Grid (Grid, GridValue)
+import Common.Grid
+  ( Grid,
+    Value,
+    fromTuple,
+    toTuple,
+  )
 import qualified Common.Grid as Grid
   ( allEastOf,
     allNorthOf,
@@ -25,21 +31,23 @@ import qualified Common.Grid as Grid
     allWestOf,
     columns,
     empty,
-    fromLines,
     fromList,
+    insert,
     lookup,
     rows,
+    subgrid,
     toList,
   )
 import qualified Common.Grid as GridValue (fromValue, toValue)
 import Common.OctaGridPosition
+import Data.Bifunctor (bimap)
 import Prelude hiding (lookup)
 
 newtype TestValue = TestValue Char deriving (Eq, Show)
 
 type TestGrid = Grid Position TestValue
 
-instance GridValue TestValue where
+instance Value TestValue where
   toValue (_, c) = Just . TestValue $ c
   fromValue (Just (TestValue c)) = c
   fromValue Nothing = '_'
@@ -53,14 +61,11 @@ fromChar = TestValue
 empty :: Grid Position TestValue
 empty = Grid.empty
 
-fromLines :: String -> Grid Position TestValue
-fromLines = Grid.fromLines
+fromList :: [((Int, Int), Char)] -> Grid Position TestValue
+fromList = Grid.fromList . map (bimap fromTuple fromChar)
 
-fromList :: [[Char]] -> Grid Position TestValue
-fromList = Grid.fromList . map (map fromChar)
-
-toList :: Grid Position TestValue -> [[Char]]
-toList = Grid.toList
+toList :: Grid Position TestValue -> [((Int, Int), Char)]
+toList = map (bimap toTuple toChar) . Grid.toList
 
 lookup :: (Int, Int) -> Grid Position TestValue -> Maybe Char
 lookup pos = fmap toChar . Grid.lookup (fromTuple pos)
@@ -82,3 +87,9 @@ allWestOf pos grid = map toTuple . (`Grid.allWestOf` grid) . fromTuple $ pos
 
 allEastOf :: (Int, Int) -> Grid Position TestValue -> [(Int, Int)]
 allEastOf pos grid = map toTuple . (`Grid.allEastOf` grid) . fromTuple $ pos
+
+insert :: (Int, Int) -> Char -> Grid Position TestValue -> Grid Position TestValue
+insert pos value = Grid.insert (fromTuple pos) (TestValue value)
+
+subgrid :: (Int, Int) -> (Int, Int) -> Grid Position TestValue -> Grid Position TestValue
+subgrid pos = Grid.subgrid (fromTuple pos)

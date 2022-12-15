@@ -1,6 +1,7 @@
 module Day09.Rope (Rope, fromList, toList, moveTail, tag, headOf) where
 
-import Common.OctaGridPosition (Position, areAdjacent, fromTuple, toTuple)
+import Common.Grid (fromTuple, toTuple)
+import Common.OctaGridPosition (Position, areAdjacent)
 
 type Knot = Position
 

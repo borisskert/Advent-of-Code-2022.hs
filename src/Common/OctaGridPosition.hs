@@ -1,15 +1,7 @@
 module Common.OctaGridPosition
   ( Position,
-    x,
-    y,
-    fromTuple,
-    toTuple,
     adjacent,
     areAdjacent,
-    north,
-    south,
-    west,
-    east,
     stepsNorth,
     stepsSouth,
     stepsWest,
@@ -17,17 +9,13 @@ module Common.OctaGridPosition
   )
 where
 
-import Common.Vector2D
+import qualified Common.Grid as Grid (Position, fromTuple, toTuple, x, y)
 
 data Position = Position Int Int deriving (Eq, Show, Ord)
 
-instance Vector2D Position where
+instance Grid.Position Position where
   x (Position myX _) = myX
   y (Position _ myY) = myY
-  north (Position myX myY) = Position myX (myY + 1)
-  south (Position myX myY) = Position myX (myY - 1)
-  west (Position myX myY) = Position (myX - 1) myY
-  east (Position myX myY) = Position (myX + 1) myY
   toTuple (Position myX myY) = (myX, myY)
   fromTuple (myX, myY) = Position myX myY
 
@@ -45,6 +33,18 @@ adjacent (Position myX myY) =
 
 areAdjacent :: Position -> Position -> Bool
 areAdjacent pos other = other `elem` adjacent pos
+
+north :: Position -> Position
+north (Position myX myY) = Position myX (myY + 1)
+
+south :: Position -> Position
+south (Position myX myY) = Position myX (myY - 1)
+
+west :: Position -> Position
+west (Position myX myY) = Position (myX - 1) myY
+
+east :: Position -> Position
+east (Position myX myY) = Position (myX + 1) myY
 
 stepsNorth :: Int -> Position -> [Position]
 stepsNorth steps pos = scanl (\p _ -> north p) pos [1 .. steps]

@@ -1,6 +1,7 @@
 module Day09.Simulation (Simulation, create, perform, visited, moveTail) where
 
-import Common.OctaGridPosition (Position, fromTuple)
+import Common.Grid (fromTuple)
+import Common.OctaGridPosition (Position)
 import Data.Set (Set)
 import qualified Data.Set as Set (empty, insert, toList)
 import Day09.Motion (Motion)

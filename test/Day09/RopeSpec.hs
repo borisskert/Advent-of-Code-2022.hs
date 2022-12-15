@@ -1,6 +1,6 @@
 module Day09.RopeSpec (spec) where
 
-import Common.OctaGridPosition (fromTuple, toTuple)
+import Common.Grid (fromTuple, toTuple)
 import Day09.Rope (fromList, toList)
 import qualified Day09.Rope as Rope (moveTail)
 import Test.Hspec

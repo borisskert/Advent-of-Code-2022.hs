@@ -1,5 +1,6 @@
 module Common.Common.OctaGridPositionSpec (spec) where
 
+import Common.Grid
 import Common.OctaGridPosition
 import Test.Hspec
 

@@ -7,21 +7,10 @@ exampleInput :: String
 exampleInput = "30373\n25512\n65332\n33549\n35390"
 
 exampleForrest :: Forrest
-exampleForrest =
-  fromList
-    [ [3, 0, 3, 7, 3],
-      [2, 5, 5, 1, 2],
-      [6, 5, 3, 3, 2],
-      [3, 3, 5, 4, 9],
-      [3, 5, 3, 9, 0]
-    ]
+exampleForrest = read exampleInput
 
 spec :: Spec
 spec = do
-  describe "When readFrom lines" $ do
-    it "Should readFrom exampleInput" $ do
-      readFrom exampleInput `shouldBe` exampleForrest
-
   describe "When look at the Forrest" $ do
     it "Should show visible trees from North" $ do
       visibleFromNorth exampleForrest
