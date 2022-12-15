@@ -2,7 +2,12 @@
 
 module Common.Grid
   ( Grid,
-    GridValue,
+    Position,
+    x,
+    y,
+    fromTuple,
+    toTuple,
+    Value,
     fromValue,
     toValue,
     empty,
@@ -21,38 +26,51 @@ module Common.Grid
     allSouthOf,
     allWestOf,
     allEastOf,
+    insert,
+    width,
+    height,
   )
 where
 
 import Common.List
-import Common.Vector2D
 import Data.Bifunctor (second)
 import Data.List (intercalate)
 import Data.Map (Map)
-import qualified Data.Map as Map (elems, empty, fromList, keys, lookup, toList)
+import qualified Data.Map as Map (elems, empty, fromList, insert, keys, lookup, toList)
 import Data.Maybe (fromJust, isJust)
 import Prelude hiding (lookup)
 
+type Range = (Int, Int)
+
 -- (width, height)
-type Size = (Int, Int)
+type Size = (Range, Range)
 
 data Grid p a = Grid Size (Map p a) deriving (Eq, Show)
 
 empty :: Grid p a
-empty = Grid (0, 0) Map.empty
+empty = Grid ((maxBound, minBound), (maxBound, minBound)) Map.empty
 
-class GridValue a where
-  toValue :: (Vector2D p) => (p, Char) -> Maybe a
+class Position a where
+  x :: a -> Int
+  y :: a -> Int
+  toTuple :: a -> (Int, Int)
+  fromTuple :: (Int, Int) -> a
+
+class Value a where
+  toValue :: (Position p) => (p, Char) -> Maybe a
   fromValue :: Maybe a -> Char
 
-fromLines :: (Vector2D p, Ord p, GridValue a) => String -> Grid p a
+fromLines :: (Position p, Ord p, Value a) => String -> Grid p a
+fromLines "" = empty
 fromLines input = Grid size gridMap
   where
     inputLines = lines input
     gridMap = fromLinesIntoMap inputLines
-    size = (maybe 0 length . safeHead $ inputLines, length inputLines)
+    maxX = maybe 0 (subtract 1 . length) . safeHead $ inputLines
+    maxY = length inputLines - 1
+    size = ((0, maxX), (0, maxY))
 
-fromLinesIntoMap :: (Vector2D p, Ord p, GridValue a) => [[Char]] -> Map p a
+fromLinesIntoMap :: (Position p, Ord p, Value a) => [[Char]] -> Map p a
 fromLinesIntoMap =
   Map.fromList
     . map (second fromJust)
@@ -71,25 +89,20 @@ each mapper (Grid size gridMap) = Grid size newGridMap
   where
     newGridMap = Map.fromList . map mapper . Map.toList $ gridMap
 
-toLines :: (Vector2D p, Ord p, GridValue a) => Grid p a -> String
+toLines :: (Position p, Ord p, Value a) => Grid p a -> String
 toLines (Grid size gridMap) =
   intercalate "\n"
     . map (\y' -> map (fromValue . (`Map.lookup` gridMap) . fromTuple . (,y')) xs)
     $ ys
   where
-    (width, height) = size
-    minX = 0
-    minY = 0
-    maxX = width - 1
-    maxY = height - 1
-
+    ((minX, maxX), (minY, maxY)) = size
     xs = [minX, (minX + 1) .. maxX]
     ys = [minY, (minY + 1) .. maxY]
 
-fromList :: (Vector2D p, Ord p) => [[a]] -> Grid p a
+fromList :: (Position p, Ord p) => [[a]] -> Grid p a
 fromList list = Grid size gridMap
   where
-    size = (maybe 0 length . safeHead $ list, length list)
+    size = ((0, maybe 0 (subtract 1 . length) . safeHead $ list), (0, length list - 1))
     gridMap =
       Map.fromList
         . concatMap (uncurry toLine)
@@ -98,27 +111,33 @@ fromList list = Grid size gridMap
 
     toLine y' line = zipWith (\x' c -> (fromTuple (x', y'), c)) [0 ..] line
 
-toList :: (Vector2D p, Ord p, GridValue a) => Grid p a -> [[Char]]
-toList (Grid size gridMap) = map (map (fromValue . (`Map.lookup` gridMap))) positions
+toList :: (Position p, Ord p, Value a) => Grid p a -> [[Char]]
+toList grid@(Grid _ gridMap) = map (map (fromValue . (`Map.lookup` gridMap))) positions
   where
-    positions = generatePositions size
+    positions = generatePositions grid
 
-generatePositions :: (Vector2D p) => Size -> [[p]]
-generatePositions (width, height) = map (\y' -> map (fromTuple . (,y')) xs) ys
+generatePositions :: (Position p) => Grid p a -> [[p]]
+generatePositions (Grid ((minX, maxX), (minY, maxY)) _) = map (\y' -> map (fromTuple . (,y')) xs) ys
   where
-    xs = [0 .. (width - 1)]
-    ys = [0 .. (height - 1)]
+    xs = [minX .. maxX]
+    ys = [minY .. maxY]
 
 mapGrid :: (Ord p) => (p -> a -> b) -> Grid p a -> Grid p b
 mapGrid fn (Grid size gridMap) = Grid size newGridMap
   where
     newGridMap = Map.fromList . map (\(pos, x') -> (pos, fn pos x')) . Map.toList $ gridMap
 
-rows :: (Vector2D p) => Grid p a -> [[p]]
-rows (Grid (width, height) _) = map (\y' -> map (fromTuple . (,y')) [0 .. width - 1]) [0 .. height - 1]
+rows :: (Position p) => Grid p a -> [[p]]
+rows grid@(Grid (_, _) _) = map (\y' -> map (fromTuple . (,y')) [0 .. gridWidth - 1]) [0 .. gridHeight - 1]
+  where
+    gridHeight = height grid
+    gridWidth = width grid
 
-columns :: (Vector2D p) => Grid p a -> [[p]]
-columns (Grid (width, height) _) = map (\x' -> map (fromTuple . (x',)) [0 .. height - 1]) [0 .. width - 1]
+columns :: (Position p) => Grid p a -> [[p]]
+columns grid@(Grid (_, _) _) = map (\x' -> map (fromTuple . (x',)) [0 .. gridHeight - 1]) [0 .. gridWidth - 1]
+  where
+    gridHeight = height grid
+    gridWidth = width grid
 
 keys :: Grid p a -> [p]
 keys (Grid _ gridMap) = Map.keys gridMap
@@ -126,14 +145,28 @@ keys (Grid _ gridMap) = Map.keys gridMap
 elems :: Grid p a -> [a]
 elems (Grid _ gridMap) = Map.elems gridMap
 
-allNorthOf :: (Vector2D p) => p -> Grid p a -> [p]
+allNorthOf :: (Position p) => p -> Grid p a -> [p]
 allNorthOf pos _ = map (fromTuple . (x pos,)) [(y pos - 1), (y pos - 2) .. 0]
 
-allSouthOf :: (Vector2D p) => p -> Grid p a -> [p]
-allSouthOf pos (Grid (_, height) _) = map (fromTuple . (x pos,)) [y pos + 1 .. (height - 1)]
+allSouthOf :: (Position p) => p -> Grid p a -> [p]
+allSouthOf pos (Grid (_, (_, maxY)) _) = map (fromTuple . (x pos,)) [y pos + 1 .. maxY]
 
-allWestOf :: (Vector2D p) => p -> Grid p a -> [p]
+allWestOf :: (Position p) => p -> Grid p a -> [p]
 allWestOf pos _ = map (fromTuple . (,y pos)) [(x pos - 1), (x pos - 2) .. 0]
 
-allEastOf :: (Vector2D p) => p -> Grid p a -> [p]
-allEastOf pos (Grid (width, _) _) = map (fromTuple . (,y pos)) [x pos + 1 .. (width - 1)]
+allEastOf :: (Position p) => p -> Grid p a -> [p]
+allEastOf pos (Grid ((_, maxX), _) _) = map (fromTuple . (,y pos)) [x pos + 1 .. maxX]
+
+insert :: (Position p, Ord p) => p -> a -> Grid p a -> Grid p a
+insert pos value (Grid ((minX, maxX), (minY, maxY)) gridMap) = Grid (newWidth, newHeight) newGridMap
+  where
+    (posX, posY) = toTuple pos
+    newWidth = (min minX posX, max maxX posX)
+    newHeight = (min minY posY, max maxY posY)
+    newGridMap = Map.insert pos value gridMap
+
+width :: Grid p a -> Int
+width (Grid ((minX, maxX), _) _) = maxX - minX + 1
+
+height :: Grid p a -> Int
+height (Grid (_, (minY, maxY)) _) = maxY - minY + 1

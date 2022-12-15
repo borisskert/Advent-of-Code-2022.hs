@@ -13,7 +13,7 @@ module Day08.Forrest
   )
 where
 
-import Common.Grid (Grid, GridValue, allEastOf, allNorthOf, allSouthOf, allWestOf, columns, elems, fromValue, rows, toValue)
+import Common.Grid (Grid, Value, allEastOf, allNorthOf, allSouthOf, allWestOf, columns, elems, fromTuple, fromValue, rows, toTuple, toValue)
 import qualified Common.Grid as Grid (fromLines, fromList, lookup, mapGrid)
 import Common.List (distinctOn, takeAscendingOn, takeUntil)
 import Common.OctaGridPosition
@@ -24,7 +24,7 @@ type Height = Int
 
 data Tree = Tree Position Int deriving (Eq, Show)
 
-instance GridValue Tree where
+instance Value Tree where
   toValue (_, '_') = Nothing
   toValue (pos, c) = Just . tree (toTuple pos) . digitToInt $c
   fromValue (Just (Tree _ h)) = head . show $ h

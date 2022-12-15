@@ -14,10 +14,16 @@ module Common.GridSpec.TestGrid
     allSouthOf,
     allWestOf,
     allEastOf,
+    insert,
   )
 where
 
-import Common.Grid (Grid, GridValue)
+import Common.Grid
+  ( Grid,
+    Value,
+    fromTuple,
+    toTuple,
+  )
 import qualified Common.Grid as Grid
   ( allEastOf,
     allNorthOf,
@@ -27,6 +33,7 @@ import qualified Common.Grid as Grid
     empty,
     fromLines,
     fromList,
+    insert,
     lookup,
     rows,
     toList,
@@ -39,7 +46,7 @@ newtype TestValue = TestValue Char deriving (Eq, Show)
 
 type TestGrid = Grid Position TestValue
 
-instance GridValue TestValue where
+instance Value TestValue where
   toValue (_, c) = Just . TestValue $ c
   fromValue (Just (TestValue c)) = c
   fromValue Nothing = '_'
@@ -82,3 +89,6 @@ allWestOf pos grid = map toTuple . (`Grid.allWestOf` grid) . fromTuple $ pos
 
 allEastOf :: (Int, Int) -> Grid Position TestValue -> [(Int, Int)]
 allEastOf pos grid = map toTuple . (`Grid.allEastOf` grid) . fromTuple $ pos
+
+insert :: (Int, Int) -> Char -> Grid Position TestValue -> Grid Position TestValue
+insert pos value = Grid.insert (fromTuple pos) (TestValue value)

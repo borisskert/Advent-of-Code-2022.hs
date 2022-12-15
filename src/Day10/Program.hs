@@ -1,7 +1,7 @@
-module Day10.Program (Program, empty, current, remaining) where
+module Day10.Program (Program, empty, current, remaining, isFinished) where
 
-import Day10.Instruction
 import Data.List (intercalate)
+import Day10.Instruction
 
 newtype Program = Program [Instruction]
 
@@ -22,3 +22,6 @@ current (Program instructions) = head instructions
 
 remaining :: Program -> Program
 remaining (Program instructions) = Program . tail $ instructions
+
+isFinished :: Program -> Bool
+isFinished (Program instructions) = null instructions

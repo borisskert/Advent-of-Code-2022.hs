@@ -1,5 +1,6 @@
 module Common.GridSpec (spec) where
 
+import Common.Grid (height, width)
 import Common.GridSpec.TestGrid
 import Test.Hspec
 import Prelude hiding (lookup)
@@ -164,3 +165,31 @@ spec = do
 
     it "Should get allEastOf (3, 4)" $ do
       allEastOf (3, 4) largerGrid `shouldBe` [(4, 4), (5, 4), (6, 4), (7, 4)]
+
+  describe "When inserting item" $ do
+    let one = insert (3, 4) 'a' empty
+
+    it "Should have width 1" $ do
+      width one `shouldBe` 1
+
+    it "Should have height 1" $ do
+      height one `shouldBe` 1
+
+    it "Should export toList" $ do
+      toList one `shouldBe` [['a']]
+
+    describe "When inserting second item" $ do
+      let two = insert (5, 2) 'b' one
+
+      it "Should have width 3" $ do
+        width two `shouldBe` 3
+  
+      it "Should have height 3" $ do
+        height two `shouldBe` 3
+
+      it "Should extend Grid" $ do
+        toList two
+          `shouldBe` [ "__b",
+                       "___",
+                       "a__"
+                     ]
