@@ -1,12 +1,12 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Day11.Items (Items, fromList, toList, isEmpty, current, remaining, append) where
+module Day11.Items (Items, fromList, toList, current, remaining, append) where
 
 import Common.List (safeHead)
+import qualified Common.List as List (append)
 import Common.Regex
 import Data.List.Split (splitOn)
 import Day11.Item
-import qualified Common.List as List (append)
 
 newtype Items = Items [Item] deriving (Show, Eq)
 
@@ -23,9 +23,6 @@ instance Read Items where
   readsPrec _ input = [(parse input, [])]
     where
       parse = Items . map (from . read) . splitOn ", " . head . parseGroups linePattern
-
-isEmpty :: Items -> Bool
-isEmpty (Items xs) = null xs
 
 current :: Items -> Maybe Item
 current (Items xs) = safeHead xs

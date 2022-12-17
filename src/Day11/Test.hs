@@ -5,15 +5,12 @@ module Day11.Test
     from,
     decide,
     divisibleBy,
---    normalize,
---    denormalize,
   )
 where
 
 import Common.Prelude (isMultipleOf)
 import Common.Regex
 import Day11.Item (Item, worryLevel)
-import qualified Day11.Item as Item (normalize)
 import Day11.MonkeyId (MonkeyId)
 
 type WorryLevel = Integer
@@ -53,9 +50,3 @@ decide item test
   where
     d = divisibleBy test
     w = worryLevel item
-
---normalize :: Test -> Item -> Item
---normalize Test {divisibleBy = d} = Item.normalize d
---
---denormalize :: Test -> Item -> Item
---denormalize Test {divisibleBy = d} = Item.denormalize d

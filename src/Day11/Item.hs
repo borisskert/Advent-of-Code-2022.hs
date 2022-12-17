@@ -12,6 +12,3 @@ worryLevel (Item level) = level
 
 normalize :: WorryLevel -> Item -> Item
 normalize worry (Item item) = Item (item `mod` worry)
---
---denormalize :: WorryLevel -> Item -> Item
---denormalize worry (Item item) = Item (item * worry)

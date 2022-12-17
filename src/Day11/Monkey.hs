@@ -6,12 +6,11 @@ import Common.List
 import Day11.Item (Item)
 import Day11.ItemThrow (ItemThrow)
 import qualified Day11.ItemThrow as Throw (from)
-import Day11.Items (Items, current, remaining, toList, fromList)
+import Day11.Items (Items, current, remaining)
 import qualified Day11.Items as Items (append)
 import Day11.MonkeyId (MonkeyId)
 import Day11.Operation (Operation, operate)
 import Day11.Test (Test, decide)
---import qualified Day11.Test as Test (normalize, denormalize)
 import Prelude hiding (id)
 
 type BusinessLevel = Int
@@ -29,8 +28,8 @@ from myId myItems myOperation myTest myBusinessLevel = Monkey {id = myId, items 
 parseFromLines :: [String] -> Monkey
 parseFromLines (headerLine : itemsLine : operationLine : testLines) =
   Monkey {id = read headerLine, items = read itemsLine, operation = read operationLine, test = myTest, businessLevel = 0}
-   where
-     myTest = read . unlines $ testLines
+  where
+    myTest = read . unlines $ testLines
 parseFromLines xs = error ("Day11.Monkey.parseFromLines: Illegal input '" ++ show xs ++ "'")
 
 type WorryLevel = Integer
@@ -49,8 +48,6 @@ inspect worry monkey@Monkey {operation = myOperation, test = myTest} item =
     . (\item' -> Throw.from item' ((`decide` myTest) item'))
     $ operate worry item myOperation
 
--- fast operate and decide
-
 throwOneItem :: Monkey -> Monkey
 throwOneItem Monkey {id = myId, items = myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel} =
   Monkey {id = myId, items = remaining myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel + 1}
@@ -63,4 +60,4 @@ inspectItems worry monkey = create ([], monkey)
 
 catch :: Item -> Monkey -> Monkey
 catch item Monkey {id = myId, items = myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel} =
-  Monkey {id = myId, items = Items.append (item) myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel}
+  Monkey {id = myId, items = Items.append item myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel}

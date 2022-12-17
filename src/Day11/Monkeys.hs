@@ -6,14 +6,12 @@ import Common.Prelude
 import Data.List.Split (splitOn)
 import Data.Map (Map, (!))
 import qualified Data.Map as Map (elems, keys)
-import qualified Day11.Item as Item (worryLevel)
-import Day11.ItemThrow (ItemThrow, item, to)
-import qualified Day11.Items as Items (toList)
 import qualified Day11.Item as Item (normalize)
-import qualified Day11.Test as Test (divisibleBy)
+import Day11.ItemThrow (ItemThrow, item, to)
 import Day11.Monkey (Monkey)
-import qualified Day11.Monkey as Monkey (catch, id, inspectItems, items, test)
+import qualified Day11.Monkey as Monkey (catch, id, inspectItems, test)
 import Day11.MonkeyId
+import qualified Day11.Test as Test (divisibleBy)
 import Prelude hiding (lookup)
 
 type WorryLevel = Integer
