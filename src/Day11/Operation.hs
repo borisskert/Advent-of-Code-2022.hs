@@ -4,6 +4,7 @@ module Day11.Operation (Operation, addition, multiplication, square, operate) wh
 
 import Common.Regex
 import Day11.Item (Item, from, worryLevel)
+import Day11.WorryLevel (WorryLevel)
 
 data Operation = Addition WorryLevel | Multiplication WorryLevel | Square deriving (Eq, Show)
 
@@ -30,8 +31,6 @@ multiplication = Multiplication
 
 square :: Operation
 square = Square
-
-type WorryLevel = Integer
 
 operate :: WorryLevel -> Item -> Operation -> Item
 operate worry item operation = from . (`div` worry) . (`execute` operation) . worryLevel $ item

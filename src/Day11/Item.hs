@@ -1,6 +1,6 @@
 module Day11.Item (Item, from, worryLevel, normalize) where
 
-type WorryLevel = Integer
+import Day11.WorryLevel (WorryLevel)
 
 newtype Item = Item WorryLevel deriving (Show, Eq)
 

@@ -12,9 +12,8 @@ import Day11.Monkey (Monkey)
 import qualified Day11.Monkey as Monkey (catch, id, inspectItems, test)
 import Day11.MonkeyId
 import qualified Day11.Test as Test (divisibleBy)
+import Day11.WorryLevel (WorryLevel)
 import Prelude hiding (lookup)
-
-type WorryLevel = Integer
 
 data Monkeys = Monkeys (Map MonkeyId Monkey) WorryLevel deriving (Eq, Show)
 

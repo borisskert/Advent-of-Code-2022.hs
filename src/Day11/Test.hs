@@ -12,8 +12,7 @@ import Common.Prelude (isMultipleOf)
 import Common.Regex
 import Day11.Item (Item, worryLevel)
 import Day11.MonkeyId (MonkeyId)
-
-type WorryLevel = Integer
+import Day11.WorryLevel (WorryLevel)
 
 data Test = Test {divisibleBy :: WorryLevel, ifTrue :: MonkeyId, ifFalse :: MonkeyId} deriving (Eq, Show)
 
