@@ -9,6 +9,7 @@ module Common.List
     takeAscending,
     takeAscendingBy,
     takeAscendingOn,
+    append,
   )
 where
 
@@ -86,3 +87,6 @@ takeAscendingOn fn = go []
     go ys (x : xs)
       | fn (last ys) < fn x = go (ys ++ [x]) xs
       | otherwise = go ys xs
+
+append :: a -> [a] -> [a]
+append x xs = xs ++ [x]
