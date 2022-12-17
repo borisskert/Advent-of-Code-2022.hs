@@ -5,5 +5,5 @@ import Data.Ord (Down (Down))
 import Day11.Monkey
 import Day11.Monkeys
 
-monkeyLevel :: String -> Int
-monkeyLevel = product . take 2 . sortOn Down . map businessLevel . toList . playRounds 20 . read
+monkeyLevel :: Integer -> Int  -> String -> Int
+monkeyLevel worry rounds = product . take 2 . sortOn Down . map businessLevel . toList . playRounds worry rounds . read

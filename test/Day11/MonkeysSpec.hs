@@ -28,9 +28,9 @@ spec = do
       read exampleInput
         `shouldBe` monkeys
 
-  describe "When playing rounds" $ do
+  describe "When playing rounds divided by worry=3" $ do
     it "Should play one round" $ do
-      playRounds 1 monkeys
+      playRounds 3 1 monkeys
         `shouldBe` fromList
           [ Monkey.from (MonkeyId.from 0) (Items.fromList [Item.from 20, Item.from 23, Item.from 27, Item.from 26]) (multiplication 19) (Test.from 23 (MonkeyId.from 2) (MonkeyId.from 3)) 2,
             Monkey.from (MonkeyId.from 1) (Items.fromList [Item.from 2080, Item.from 25, Item.from 167, Item.from 207, Item.from 401, Item.from 1046]) (addition 6) (Test.from 19 (MonkeyId.from 2) (MonkeyId.from 0)) 4,
@@ -39,7 +39,7 @@ spec = do
           ]
 
     it "Should play 20 rounds" $ do
-      playRounds 20 monkeys
+      playRounds 3 20 monkeys
         `shouldBe` fromList
           [ Monkey.from (MonkeyId.from 0) (Items.fromList [Item.from 10, Item.from 12, Item.from 14, Item.from 26, Item.from 34]) (multiplication 19) (Test.from 23 (MonkeyId.from 2) (MonkeyId.from 3)) 101,
             Monkey.from (MonkeyId.from 1) (Items.fromList [Item.from 245, Item.from 93, Item.from 53, Item.from 199, Item.from 115]) (addition 6) (Test.from 19 (MonkeyId.from 2) (MonkeyId.from 0)) 95,

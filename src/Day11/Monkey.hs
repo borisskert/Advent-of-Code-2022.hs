@@ -1,16 +1,17 @@
 {-# LANGUAGE TupleSections #-}
 
-module Day11.Monkey (Monkey, from, inspectItem, inspectItems, businessLevel, catch, id) where
+module Day11.Monkey (Monkey, from, inspectItem, inspectItems, businessLevel, catch, id, items, test) where
 
 import Common.List
 import Day11.Item (Item)
 import Day11.ItemThrow (ItemThrow)
 import qualified Day11.ItemThrow as Throw (from)
-import Day11.Items (Items, current, remaining)
+import Day11.Items (Items, current, remaining, toList, fromList)
 import qualified Day11.Items as Items (append)
 import Day11.MonkeyId (MonkeyId)
 import Day11.Operation (Operation, operate)
 import Day11.Test (Test, decide)
+--import qualified Day11.Test as Test (normalize, denormalize)
 import Prelude hiding (id)
 
 type BusinessLevel = Int
@@ -27,33 +28,39 @@ from myId myItems myOperation myTest myBusinessLevel = Monkey {id = myId, items 
 
 parseFromLines :: [String] -> Monkey
 parseFromLines (headerLine : itemsLine : operationLine : testLines) =
-  Monkey {id = read headerLine, items = read itemsLine, operation = read operationLine, test = read . unlines $ testLines, businessLevel = 0}
+  Monkey {id = read headerLine, items = read itemsLine, operation = read operationLine, test = myTest, businessLevel = 0}
+   where
+     myTest = read . unlines $ testLines
 parseFromLines xs = error ("Day11.Monkey.parseFromLines: Illegal input '" ++ show xs ++ "'")
 
-inspectItem :: Monkey -> Maybe (ItemThrow, Monkey)
-inspectItem monkey =
+type WorryLevel = Integer
+
+inspectItem :: WorryLevel -> Monkey -> Maybe (ItemThrow, Monkey)
+inspectItem worryDivider monkey =
   fmap
-    (inspect monkey)
+    (inspect worryDivider monkey)
     . current
     . items
     $ monkey
 
-inspect :: Monkey -> Item -> (ItemThrow, Monkey)
-inspect monkey@Monkey {operation = myOperation, test = myTest} =
+inspect :: WorryLevel -> Monkey -> Item -> (ItemThrow, Monkey)
+inspect worry monkey@Monkey {operation = myOperation, test = myTest} item =
   (,throwOneItem monkey)
-    . (\item -> Throw.from item ((`decide` myTest) item))
-    . (`operate` myOperation)
+    . (\item' -> Throw.from item' ((`decide` myTest) item'))
+    $ operate worry item myOperation
+
+-- fast operate and decide
 
 throwOneItem :: Monkey -> Monkey
 throwOneItem Monkey {id = myId, items = myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel} =
   Monkey {id = myId, items = remaining myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel + 1}
 
-inspectItems :: Monkey -> ([ItemThrow], Monkey)
-inspectItems monkey = create ([], monkey)
+inspectItems :: WorryLevel -> Monkey -> ([ItemThrow], Monkey)
+inspectItems worry monkey = create ([], monkey)
   where
     create :: ([ItemThrow], Monkey) -> ([ItemThrow], Monkey)
-    create (throws, myMonkey) = maybe (throws, myMonkey) (create . (\(t, m) -> (t `append` throws, m))) . inspectItem $ myMonkey
+    create (throws, myMonkey) = maybe (throws, myMonkey) (create . (\(t, m) -> (t `append` throws, m))) . inspectItem worry $ myMonkey
 
 catch :: Item -> Monkey -> Monkey
 catch item Monkey {id = myId, items = myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel} =
-  Monkey {id = myId, items = Items.append item myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel}
+  Monkey {id = myId, items = Items.append (item) myItems, operation = myOperation, test = myTest, businessLevel = myBusinessLevel}

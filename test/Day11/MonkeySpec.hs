@@ -21,14 +21,14 @@ spec = do
 
   describe "When inspecting items" $ do
     it "Should inspect first item" $ do
-      inspectItem monkey0
+      inspectItem 3 monkey0
         `shouldBe` Just
           ( ItemThrow.from (Item.from 500) (MonkeyId.from 3),
             from (MonkeyId.from 0) (fromList [Item.from 98]) (multiplication 19) (Test.from 23 (MonkeyId.from 2) (MonkeyId.from 3)) 1
           )
 
     it "Should inspect all items" $ do
-      inspectItems monkey0
+      inspectItems 3 monkey0
         `shouldBe` ( [ItemThrow.from (Item.from 500) (MonkeyId.from 3), ItemThrow.from (Item.from 620) (MonkeyId.from 3)],
                      from (MonkeyId.from 0) (fromList []) (multiplication 19) (Test.from 23 (MonkeyId.from 2) (MonkeyId.from 3)) 2
                    )

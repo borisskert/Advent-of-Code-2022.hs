@@ -1,6 +1,6 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Day11.Items (Items, fromList, isEmpty, current, remaining, append) where
+module Day11.Items (Items, fromList, toList, isEmpty, current, remaining, append) where
 
 import Common.List (safeHead)
 import Common.Regex
@@ -12,6 +12,9 @@ newtype Items = Items [Item] deriving (Show, Eq)
 
 fromList :: [Item] -> Items
 fromList = Items
+
+toList :: Items -> [Item]
+toList (Items xs) = xs
 
 linePattern :: Regex
 linePattern = [re|[ ]*Starting items: ([0-9, ]+)|]

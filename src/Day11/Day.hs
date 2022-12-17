@@ -14,6 +14,6 @@ day11part1 =
       isDefault = True,
       run = do
         input <- readFileContents "puzzleinput/day11.txt"
-        let result = monkeyLevel input
+        let result = monkeyLevel 1 20 input
         print result
     }

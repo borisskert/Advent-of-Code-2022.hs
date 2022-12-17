@@ -2,17 +2,23 @@ module Day11.Monkeys (Monkeys, fromList, playRound, playRounds, insert, toList) 
 
 import Common.Fold
 import Common.Map
+import Common.Prelude
 import Data.List.Split (splitOn)
 import Data.Map (Map, (!))
-import qualified Data.Map as Map (elems, fromList, keys, lookup, toList)
+import qualified Data.Map as Map (elems, keys)
+import qualified Day11.Item as Item (worryLevel)
 import Day11.ItemThrow (ItemThrow, item, to)
+import qualified Day11.Items as Items (toList)
+import qualified Day11.Item as Item (normalize)
+import qualified Day11.Test as Test (divisibleBy)
 import Day11.Monkey (Monkey)
-import qualified Day11.Monkey as Monkey (catch, id, inspectItems)
+import qualified Day11.Monkey as Monkey (catch, id, inspectItems, items, test)
 import Day11.MonkeyId
-import Debug.Trace (traceShow)
 import Prelude hiding (lookup)
 
-newtype Monkeys = Monkeys (Map MonkeyId Monkey) deriving (Eq, Show)
+type WorryLevel = Integer
+
+data Monkeys = Monkeys (Map MonkeyId Monkey) WorryLevel deriving (Eq, Show)
 
 instance Read Monkeys where
   readsPrec _ input = [(parsed, [])]
@@ -20,20 +26,27 @@ instance Read Monkeys where
       parsed = parseFromInput input
 
 parseFromInput :: String -> Monkeys
-parseFromInput = Monkeys . fromListOn Monkey.id . map (read . unlines) . splitOn [""] . lines
+parseFromInput input = Monkeys monkeyMap maxWorry
+  where
+    monkeys = map (read . unlines) . splitOn [""] . lines $ input
+    maxWorry = lcmOf . map (Test.divisibleBy . Monkey.test) $ monkeys
+    monkeyMap = fromListOn Monkey.id monkeys
 
 fromList :: [Monkey] -> Monkeys
-fromList = Monkeys . fromListOn Monkey.id
+fromList monkeys = Monkeys monkeyMap maxWorry
+  where
+    maxWorry = lcmOf . map (Test.divisibleBy . Monkey.test) $ monkeys
+    monkeyMap = fromListOn Monkey.id monkeys
 
-playRounds :: Int -> Monkeys -> Monkeys
-playRounds n monkeys = times playRound monkeys n
+playRounds :: WorryLevel -> Int -> Monkeys -> Monkeys
+playRounds worry n monkeys = times (playRound worry) monkeys n
 
-playRound :: Monkeys -> Monkeys
-playRound monkeys@(Monkeys monkeyMap) = (`go` monkeys) . Map.keys $ monkeyMap
+playRound :: WorryLevel -> Monkeys -> Monkeys
+playRound worry monkeys@(Monkeys monkeyMap _) = (`go` monkeys) . Map.keys $ monkeyMap
   where
     go :: [MonkeyId] -> Monkeys -> Monkeys
     go [] monkeys' = monkeys'
-    go (myId : others) monkeys' = go others . (`handle` monkeys') . Monkey.inspectItems . (\x -> traceShow ("go", monkeys') x) . (`lookup` monkeys') $ myId
+    go (myId : others) monkeys' = go others . (`handle` monkeys') . Monkey.inspectItems worry . (`lookup` monkeys') $ myId
 
 handle :: ([ItemThrow], Monkey) -> Monkeys -> Monkeys
 handle (itemThrows, monkey) monkeys = catches itemThrows nextMonkeys
@@ -44,20 +57,19 @@ catches :: [ItemThrow] -> Monkeys -> Monkeys
 catches ts monkeys = foldl (flip catch) monkeys ts
 
 catch :: ItemThrow -> Monkeys -> Monkeys
-catch t monkeys@(Monkeys monkeyMap) =
-  traceShow (t)
-    . ((`insert` monkeys) . Monkey.catch myItem)
+catch t monkeys@(Monkeys _ maxWorry) =
+  ((`insert` monkeys) . Monkey.catch myItem)
     . lookup myId
     $ monkeys
   where
     myId = to t
-    myItem = item t
+    myItem = Item.normalize maxWorry . item $ t
 
 lookup :: MonkeyId -> Monkeys -> Monkey
-lookup monkeyId (Monkeys monkeys) = (!) monkeys monkeyId
+lookup monkeyId (Monkeys monkeys _) = (!) monkeys monkeyId
 
 insert :: Monkey -> Monkeys -> Monkeys
-insert monkey (Monkeys monkeys) = traceShow (monkey) . Monkeys . insertOn Monkey.id monkey $ monkeys
+insert monkey (Monkeys monkeys maxWorry) = (`Monkeys` maxWorry) . insertOn Monkey.id monkey $ monkeys
 
 toList :: Monkeys -> [Monkey]
-toList (Monkeys monkeys') = Map.elems monkeys'
+toList (Monkeys monkeys' _) = Map.elems monkeys'
