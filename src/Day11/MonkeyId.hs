@@ -4,7 +4,7 @@ module Day11.MonkeyId (MonkeyId, from) where
 
 import Common.Regex
 
-newtype MonkeyId = MonkeyId Int deriving (Eq, Show)
+newtype MonkeyId = MonkeyId Int deriving (Eq, Show, Ord)
 
 from :: Int -> MonkeyId
 from = MonkeyId

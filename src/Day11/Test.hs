@@ -1,8 +1,10 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Day11.Test (Test, from) where
+module Day11.Test (Test, from, decide) where
 
+import Common.Prelude (isMultipleOf)
 import Common.Regex
+import Day11.Item (Item, worryLevel)
 import Day11.MonkeyId (MonkeyId)
 
 data Test = Test {divisibleBy :: Int, ifTrue :: MonkeyId, ifFalse :: MonkeyId} deriving (Eq, Show)
@@ -32,3 +34,11 @@ parseTrueLine = read . head . parseGroups [re|[ ]*If true: (.+)|]
 
 parseFalseLine :: String -> MonkeyId
 parseFalseLine = read . head . parseGroups [re|[ ]*If false: (.+)|]
+
+decide :: Item -> Test -> MonkeyId
+decide item test
+  | w `isMultipleOf` d = ifTrue test
+  | otherwise = ifFalse test
+  where
+    d = divisibleBy test
+    w = worryLevel item

@@ -1,6 +1,11 @@
-module Day11.Item (Item, from) where
+module Day11.Item (Item, from, worryLevel) where
 
-newtype Item = Item Int deriving (Show, Eq)
+type WorryLevel = Int
+  
+newtype Item = Item WorryLevel deriving (Show, Eq)
 
-from :: Int -> Item
+from :: WorryLevel -> Item
 from = Item
+
+worryLevel :: Item -> WorryLevel
+worryLevel (Item level) = level
