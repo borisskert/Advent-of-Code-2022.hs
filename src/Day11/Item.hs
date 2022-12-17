@@ -1,6 +1,6 @@
-module Day11.Item (Item, item) where
+module Day11.Item (Item, from) where
 
 newtype Item = Item Int deriving (Show, Eq)
 
-item :: Int -> Item
-item = Item
+from :: Int -> Item
+from = Item

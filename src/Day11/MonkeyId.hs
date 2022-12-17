@@ -1,13 +1,13 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Day11.MonkeyId (MonkeyId, monkeyId) where
+module Day11.MonkeyId (MonkeyId, from) where
 
 import Common.Regex
 
 newtype MonkeyId = MonkeyId Int deriving (Eq, Show)
 
-monkeyId :: Int -> MonkeyId
-monkeyId = MonkeyId
+from :: Int -> MonkeyId
+from = MonkeyId
 
 instance Read MonkeyId where
   readsPrec _ input = [(readFrom input, [])]

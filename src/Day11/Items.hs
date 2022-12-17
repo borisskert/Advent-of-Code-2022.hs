@@ -17,4 +17,4 @@ linePattern = [re|[ ]*Starting items: ([0-9, ]+)|]
 instance Read Items where
   readsPrec _ input = [(parse input, [])]
     where
-      parse = Items . map (item . read) . splitOn ", " . head . parseGroups linePattern
+      parse = Items . map (from . read) . splitOn ", " . head . parseGroups linePattern

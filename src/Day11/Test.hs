@@ -1,9 +1,9 @@
 {-# LANGUAGE QuasiQuotes #-}
 
-module Day11.Test (Test, test) where
+module Day11.Test (Test, from) where
 
 import Common.Regex
-import Day11.MonkeyId
+import Day11.MonkeyId (MonkeyId)
 
 data Test = Test {divisibleBy :: Int, ifTrue :: MonkeyId, ifFalse :: MonkeyId} deriving (Eq, Show)
 
@@ -12,8 +12,8 @@ instance Read Test where
     where
       parsed = parseLines . lines $input
 
-test :: Int -> MonkeyId -> MonkeyId -> Test
-test d t f = Test {divisibleBy = d, ifTrue = t, ifFalse = f}
+from :: Int -> MonkeyId -> MonkeyId -> Test
+from d t f = Test {divisibleBy = d, ifTrue = t, ifFalse = f}
 
 parseLines :: [String] -> Test
 parseLines [header, true, false] =
