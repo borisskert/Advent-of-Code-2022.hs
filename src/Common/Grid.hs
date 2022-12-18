@@ -15,6 +15,7 @@ module Common.Grid
     toList,
     lookup,
     lookupPositions,
+    find,
     each,
     mapGrid,
     columns,
@@ -33,7 +34,7 @@ module Common.Grid
 where
 
 import Common.BidirectionalMap (BidirectionalMap)
-import qualified Common.BidirectionalMap as BidirectionalMap (elems, empty, fromList, insert, keys, lookup, lookupKey, toList)
+import qualified Common.BidirectionalMap as BidirectionalMap (elems, empty, find, fromList, insert, keys, lookup, lookupKey, toList)
 import Common.List
 import Data.Bifunctor (second)
 import Data.List (intercalate)
@@ -89,6 +90,9 @@ fromLinesIntoMap =
 
 lookup :: (Ord p) => p -> Grid p a -> Maybe a
 lookup p (Grid _ gridMap) = BidirectionalMap.lookup p gridMap
+
+find :: (Ord p) => p -> Grid p a -> a
+find p (Grid _ gridMap) = BidirectionalMap.find p gridMap
 
 lookupPositions :: (Ord a) => a -> Grid p a -> [p]
 lookupPositions value (Grid _ gridMap) = BidirectionalMap.lookupKey value gridMap

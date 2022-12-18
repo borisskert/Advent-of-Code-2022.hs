@@ -1,4 +1,4 @@
-module Day12.Height (Height, start, end, from) where
+module Day12.Height (Height, start, end, from, arePassable) where
 
 import qualified Common.Grid as Grid (Value, fromValue, toValue)
 import Data.Char (chr, ord)
@@ -25,3 +25,11 @@ end = End
 
 from :: Int -> Height
 from = Height
+
+elevation :: Height -> Int
+elevation (Height h) = h
+elevation Start = subtract offset . ord $ 'a'
+elevation End = subtract offset . ord $ 'z'
+
+arePassable :: Height -> Height -> Bool
+arePassable a b = abs (elevation a - elevation b) <= 1
