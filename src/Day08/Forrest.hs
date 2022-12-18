@@ -34,7 +34,7 @@ import Data.Maybe (mapMaybe)
 
 type Height = Int
 
-data Tree = Tree Position Int deriving (Eq, Show)
+data Tree = Tree Position Int deriving (Eq, Show, Ord)
 
 instance Value Tree where
   toValue (_, '_') = Nothing

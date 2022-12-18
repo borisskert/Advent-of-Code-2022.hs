@@ -21,7 +21,7 @@ screenLines = 6
 fromCycle :: Int -> PixelPosition
 fromCycle = fromTuple . flipTuple . (`divMod` screenColumns)
 
-newtype PixelValue = PixelValue Bool deriving (Eq)
+newtype PixelValue = PixelValue Bool deriving (Eq, Ord)
 
 instance Value PixelValue where
   toValue (_, '#') = Just (PixelValue True)

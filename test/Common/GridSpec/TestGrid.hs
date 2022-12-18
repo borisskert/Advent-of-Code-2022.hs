@@ -7,6 +7,7 @@ module Common.GridSpec.TestGrid
     fromList,
     toList,
     lookup,
+    lookupPositions,
     columns,
     rows,
     allNorthOf,
@@ -34,6 +35,7 @@ import qualified Common.Grid as Grid
     fromList,
     insert,
     lookup,
+    lookupPositions,
     rows,
     subgrid,
     toList,
@@ -43,7 +45,7 @@ import Common.OctaGridPosition
 import Data.Bifunctor (bimap)
 import Prelude hiding (lookup)
 
-newtype TestValue = TestValue Char deriving (Eq, Show)
+newtype TestValue = TestValue Char deriving (Eq, Show, Ord)
 
 type TestGrid = Grid Position TestValue
 
@@ -69,6 +71,9 @@ toList = map (bimap toTuple toChar) . Grid.toList
 
 lookup :: (Int, Int) -> Grid Position TestValue -> Maybe Char
 lookup pos = fmap toChar . Grid.lookup (fromTuple pos)
+
+lookupPositions :: Char -> Grid Position TestValue -> [(Int, Int)]
+lookupPositions value grid = map toTuple . (`Grid.lookupPositions` grid) . fromChar $ value
 
 columns :: Grid Position TestValue -> [[(Int, Int)]]
 columns = map (map toTuple) . Grid.columns
