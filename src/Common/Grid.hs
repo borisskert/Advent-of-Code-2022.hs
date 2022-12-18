@@ -53,8 +53,10 @@ empty = Grid ((maxBound, minBound), (maxBound, minBound)) BidirectionalMap.empty
 class Position a where
   x :: a -> Int
   y :: a -> Int
-  toTuple :: a -> (Int, Int)
   fromTuple :: (Int, Int) -> a
+
+toTuple :: (Position a) => a -> (Int, Int)
+toTuple position = (x position, y position)
 
 class Value a where
   toValue :: (Position p) => (p, Char) -> Maybe a

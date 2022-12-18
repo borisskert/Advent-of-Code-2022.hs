@@ -1,6 +1,6 @@
 module Day10.Screen (Screen, empty, draw) where
 
-import Common.Grid (Grid, Position, Value, fromTuple, fromValue, toTuple, toValue, x, y)
+import Common.Grid (Grid, Position, Value, fromTuple, fromValue, toValue, x, y)
 import qualified Common.Grid as Grid (empty, insert, subgrid)
 import Common.Tuple
 
@@ -9,7 +9,6 @@ data PixelPosition = PixelPosition Int Int deriving (Eq, Ord)
 instance Position PixelPosition where
   x (PixelPosition x' _) = x'
   y (PixelPosition _ y') = y'
-  toTuple (PixelPosition x' y') = (x', y')
   fromTuple (x', y') = PixelPosition x' y'
 
 screenColumns :: Int
