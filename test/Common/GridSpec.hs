@@ -220,3 +220,32 @@ spec = do
 
       it "Should extend Grid" $ do
         show two `shouldBe` "__b\n___\na__"
+
+  describe "When lookupKey for values" $ do
+    it "Should NOT find anything in empty Grid" $ do
+      lookupPositions 'c' empty `shouldBe` []
+
+    it "Should find position in single value Grid" $ do
+      lookupPositions 'c' (fromList [((45, 3), 'c')]) `shouldBe` [(45, 3)]
+
+    it "Should find position in simple Grid" $ do
+      lookupPositions
+        'c'
+        ( fromList
+            [ ((0, 0), 'a'),
+              ((1, 0), 'b'),
+              ((0, 1), 'c'),
+              ((1, 1), 'd'),
+              ((0, 2), 'e'),
+              ((1, 2), 'f')
+            ]
+        )
+        `shouldBe` [(0, 1)]
+
+    it "Should find position in larger Grid" $ do
+      lookupPositions 'A' largerGrid `shouldBe` [(4, 4)]
+      lookupPositions 'C' largerGrid `shouldBe` [(6, 4)]
+
+    it "Should find positions in larger Grid with duplicates" $ do
+      lookupPositions 'A' (insert (3, 2) 'A' . insert (-3, 367) 'A' . insert (43, 543) 'A' $ largerGrid)
+        `shouldBe` [(4, 4), (43, 543), (-3, 367), (3, 2)]

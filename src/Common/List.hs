@@ -10,10 +10,11 @@ module Common.List
     takeAscendingBy,
     takeAscendingOn,
     append,
+    minimumOn,
   )
 where
 
-import Data.List (groupBy)
+import Data.List (groupBy, minimumBy)
 import qualified Data.Map as Map (empty, insert, member)
 import qualified Data.Set as Set (empty, insert, member)
 
@@ -90,3 +91,6 @@ takeAscendingOn fn = go []
 
 append :: a -> [a] -> [a]
 append x xs = xs ++ [x]
+
+minimumOn :: (Ord b) => (a -> b) -> [a] -> a
+minimumOn fn = minimumBy (\a b -> compare (fn a) (fn b))
