@@ -1,43 +1,29 @@
-module Day12.Path (Path, empty, singleton, fromList, steps, prepend, append, contains, isEmpty, areIntersecting) where
+module Day12.Path (Path, empty, singleton, fromList, steps, append) where
 
 import Common.CrossGridPosition (Position)
-import Data.Set (Set)
-import qualified Data.Set as Set (empty, fromList, insert, intersection, member, singleton)
 
-data Path = Path [Position] (Set Position)
+newtype Path = Path [Position]
 
 instance Eq Path where
-    a == b = steps a == steps b
+  a == b = steps a == steps b
 
 instance Ord Path where
-    compare a b = compare (steps a) (steps b)
+  compare a b = compare (steps a) (steps b)
 
 instance Show Path where
-  show (Path xs _) = show xs
+  show (Path xs) = show xs
 
 empty :: Path
-empty = Path [] Set.empty
+empty = Path []
 
 singleton :: Position -> Path
-singleton x = Path [x] (Set.singleton x)
+singleton x = Path [x]
 
 fromList :: [Position] -> Path
-fromList xs = Path xs (Set.fromList xs)
+fromList = Path
 
 steps :: Path -> Int
-steps (Path xs _) = length xs
-
-prepend :: Position -> Path -> Path
-prepend pos (Path xs mySet) = Path (pos : xs) (Set.insert pos mySet)
+steps (Path xs) = length xs
 
 append :: Position -> Path -> Path
-append pos (Path xs mySet) = Path (xs ++ [pos]) (Set.insert pos mySet)
-
-contains :: Position -> Path -> Bool
-contains pos (Path _ path) = pos `Set.member` path
-
-isEmpty :: Path -> Bool
-isEmpty (Path path _) = null path
-
-areIntersecting :: Path -> Path -> Bool
-areIntersecting (Path _ a) (Path _ b) = not . null . Set.intersection a $ b
+append pos (Path xs) = Path (xs ++ [pos])

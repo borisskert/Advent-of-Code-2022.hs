@@ -14,6 +14,6 @@ day12part1 =
       isDefault = True,
       run = do
         input <- readFileContents "puzzleinput/day12.txt"
-        let result = howManyPathSteps input
+        let result = howManyPathStepsStartingFromS input
         print result
     }
