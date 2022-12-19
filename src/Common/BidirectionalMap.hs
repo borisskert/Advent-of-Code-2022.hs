@@ -15,7 +15,7 @@ where
 import Common.MultiMap (MultiMap)
 import qualified Common.MultiMap as MultiMap (empty, insert, lookup)
 import Data.Map (Map)
-import qualified Data.Map as Map (elems, empty, insert, lookup, toList)
+import qualified Data.Map as Map (elems, empty, insert, keys, lookup, toList)
 import Data.Maybe (fromJust)
 import Prelude hiding (lookup)
 
@@ -46,7 +46,7 @@ insert k v (BidirectionalMap myMap myReverseMap) = BidirectionalMap newMap newRe
     newReverseMap = MultiMap.insert v k myReverseMap
 
 keys :: BidirectionalMap k v -> [k]
-keys = undefined
+keys (BidirectionalMap myMap _) = Map.keys myMap
 
 elems :: BidirectionalMap k v -> [v]
 elems (BidirectionalMap myMap _) = Map.elems myMap
