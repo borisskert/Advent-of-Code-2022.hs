@@ -1,6 +1,6 @@
 module Day10.Screen (Screen, empty, draw) where
 
-import Common.Grid (Grid, Position, Value, fromTuple, fromValue, toValue, x, y)
+import Common.Grid (Grid, Position, Value, fromTuple, fromValue, toValue, x, y, adjacent)
 import qualified Common.Grid as Grid (empty, insert, subgrid)
 import Common.Tuple
 
@@ -10,6 +10,7 @@ instance Position PixelPosition where
   x (PixelPosition x' _) = x'
   y (PixelPosition _ y') = y'
   fromTuple (x', y') = PixelPosition x' y'
+  adjacent = error "PixelPosition.adjacent: not implemented"
 
 screenColumns :: Int
 screenColumns = 40

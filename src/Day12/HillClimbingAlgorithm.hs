@@ -1,6 +1,6 @@
 module Day12.HillClimbingAlgorithm (howManyPathStepsStartingFromS, howManyPathStepsStartingFromAnyA) where
 
-import Day12.Path
+import Common.Path (steps)
 import Day12.PathFinder
 
 howManyPathStepsStartingFromS :: String -> Int

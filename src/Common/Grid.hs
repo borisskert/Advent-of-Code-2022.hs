@@ -7,6 +7,7 @@ module Common.Grid
     y,
     fromTuple,
     toTuple,
+    adjacent,
     Value,
     fromValue,
     toValue,
@@ -30,12 +31,18 @@ module Common.Grid
     width,
     height,
     subgrid,
+    adjacentOf,
+    findPath,
+    Path,
   )
 where
 
 import Common.BidirectionalMap (BidirectionalMap)
 import qualified Common.BidirectionalMap as BidirectionalMap (elems, empty, find, fromList, insert, keys, lookup, lookupKey, toList)
-import Common.List
+import qualified Common.List as List
+import Common.Path (Path)
+import qualified Common.Path as Path (append, singleton)
+import Common.ShortestPathFast (findRoute)
 import Data.Bifunctor (second)
 import Data.List (intercalate)
 import Data.Maybe (fromJust, isJust, mapMaybe)
@@ -55,6 +62,7 @@ class Position a where
   x :: a -> Int
   y :: a -> Int
   fromTuple :: (Int, Int) -> a
+  adjacent :: a -> [a]
 
 toTuple :: (Position a) => a -> (Int, Int)
 toTuple position = (x position, y position)
@@ -73,7 +81,7 @@ fromLines input = Grid size gridMap
   where
     inputLines = lines input
     gridMap = fromLinesIntoMap inputLines
-    maxX = maybe 0 (subtract 1 . length) . safeHead $ inputLines
+    maxX = maybe 0 (subtract 1 . length) . List.safeHead $ inputLines
     maxY = length inputLines - 1
     size = ((0, maxX), (0, maxY))
 
@@ -183,3 +191,30 @@ subgrid pos (width', height') grid = newGrid
     lookupValue position = fmap (position,) . lookup position $ grid
     pairs = mapMaybe lookupValue positions
     newGrid = foldl (\g (k, v) -> insert k v g) empty pairs
+
+adjacentOf :: (Position p, Ord p) => p -> Grid p a -> [(p, a)]
+adjacentOf myPos myMap = mapMaybe lookupPair . adjacent $ myPos
+  where
+    lookupPair pos = fmap (pos,) found
+      where
+        found = lookup pos myMap
+
+-- Searches a path by Shortest Path Faster Algorithm (SPFA)
+-- https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
+findPath ::
+  (Position p, Ord p, Ord a) =>
+  (p, a) -> -- Where you start from
+  ((p, a) -> Bool) -> -- Predicate to define the final target
+  ((p, a) -> (p, a) -> Bool) -> -- Can you pass from a position to other?
+  Grid p a -> -- Your Grid
+  Maybe (Path p a) -- Maybe there is a Path, maybe not?
+findPath myStart isTarget canPassTo myMap = fmap fst . findRoute next isTarget $ source
+  where
+    source = (Path.singleton myStart, myStart)
+
+    next (path, (myPos, myHeight)) = map (\other@(otherPos, otherHeight) -> (Path.append other path, (otherPos, otherHeight))) nextPositions
+      where
+        myAdjacentPositions = adjacentOf myPos myMap
+        nextPositions = filter canPass myAdjacentPositions
+
+        canPass (p, a) = canPassTo (myPos, myHeight) (p, a)

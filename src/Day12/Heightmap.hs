@@ -1,12 +1,8 @@
-{-# LANGUAGE TupleSections #-}
-
-module Day12.Heightmap (Heightmap, empty, start, end, lookup, adjacent) where
+module Day12.Heightmap (Heightmap, empty, start, end, findPath) where
 
 import Common.CrossGridPosition (Position)
-import qualified Common.CrossGridPosition as Position (adjacent)
-import Common.Grid (Grid)
-import qualified Common.Grid as Grid (empty, lookup, lookupPositions)
-import Data.Maybe (mapMaybe)
+import Common.Grid (Grid, Path)
+import qualified Common.Grid as Grid (empty, findPath, lookupPositions)
 import Day12.Height (Height)
 import qualified Day12.Height as Height (end, start)
 import Prelude hiding (lookup)
@@ -28,13 +24,8 @@ start (Heightmap grid) = head . Grid.lookupPositions Height.start $ grid
 end :: Heightmap -> Position
 end (Heightmap grid) = head . Grid.lookupPositions Height.end $ grid
 
-lookup :: Position -> Heightmap -> Maybe Height
-lookup pos (Heightmap grid) = Grid.lookup pos grid
-
-adjacent :: Position -> Heightmap -> [(Position, Height)]
-adjacent myPos myMap = mapMaybe lookupPair . Position.adjacent $ myPos
+findPath :: (Position, Height) -> Height -> ((Position, Height) -> (Position, Height) -> Bool) -> Heightmap -> Maybe (Path Position Height)
+findPath myStart targetHeight isPassable (Heightmap myMap) = Grid.findPath myStart isTarget isPassable myMap
   where
-    lookupPair :: Position -> Maybe (Position, Height)
-    lookupPair pos = fmap (pos,) found
-      where
-        found = lookup pos myMap
+    isTarget :: (Position, Height) -> Bool
+    isTarget (_, myHeight) = myHeight == targetHeight
