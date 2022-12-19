@@ -1,20 +1,15 @@
-module Day12.Height (Height, start, end, from, arePassable) where
+module Day12.Height (Height, fromChar, start, end, from, arePassable, elevation) where
 
 import qualified Common.Grid as Grid (Value, fromValue, toValue)
 import Data.Char (chr, ord)
 
-data Height = Height Int | Start | End deriving (Eq, Show, Ord)
-
-offset :: Int
-offset = ord 'a'
+data Height = Height Char | Start | End deriving (Eq, Show, Ord)
 
 instance Grid.Value Height where
-  toValue (_, 'S') = Just Start
-  toValue (_, 'E') = Just End
-  toValue (_, c) = Just . Height . subtract offset . ord $ c
+  toValue (_, c) = Just . fromChar $ c
   fromValue (Just Start) = 'S'
   fromValue (Just End) = 'E'
-  fromValue (Just (Height i)) = chr . (+ offset) $ i
+  fromValue (Just (Height c)) = c
   fromValue Nothing = '_'
 
 start :: Height
@@ -23,13 +18,23 @@ start = Start
 end :: Height
 end = End
 
+offset :: Int
+offset = ord 'a'
+
 from :: Int -> Height
-from = Height
+from (-1) = Start
+from 27 = End
+from i = Height . chr . (+ offset) $ i
+
+fromChar :: Char -> Height
+fromChar 'S' = Start
+fromChar 'E' = End
+fromChar c = Height c
 
 elevation :: Height -> Int
-elevation (Height h) = h
-elevation Start = subtract offset . ord $ 'a'
-elevation End = subtract offset . ord $ 'z'
+elevation Start = 0
+elevation End = 25
+elevation (Height c) = subtract offset . ord $ c
 
 arePassable :: Height -> Height -> Bool
-arePassable a b = abs (elevation a - elevation b) <= 1
+arePassable a b = a >= b || abs (elevation a - elevation b) <= 1
