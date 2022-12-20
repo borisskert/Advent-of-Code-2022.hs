@@ -1,4 +1,4 @@
-module Day13.Signal (Signal, group, value, parseGroup) where
+module Day13.Signal (Signal, group, value, parseGroup, dividers, isDivider) where
 
 import Text.ParserCombinators.Parsec
   ( GenParser,
@@ -25,6 +25,12 @@ group = Group
 
 value :: Int -> Signal
 value = Value
+
+isDivider :: Signal -> Bool
+isDivider = (`elem` dividers)
+
+dividers :: [Signal]
+dividers = [Group [Group [Value 2]], Group [Group [Value 6]]]
 
 -- ---------------------------------------------------------------------------------------------------------------------
 -- Ord instance

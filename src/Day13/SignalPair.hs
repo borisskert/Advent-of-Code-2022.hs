@@ -1,4 +1,4 @@
-module Day13.SignalPair (SignalPair, pair, parse, parseSignalPair, hasCorrectOrder) where
+module Day13.SignalPair (SignalPair, pair, parse, parseSignalPair, hasCorrectOrder, toList) where
 
 import Day13.Signal
 import Text.ParserCombinators.Parsec
@@ -11,7 +11,7 @@ import qualified Text.ParserCombinators.Parsec as Parsec
   )
 
 -- ---------------------------------------------------------------------------------------------------------------------
--- SignalPair data structure 
+-- SignalPair data structure
 -- ---------------------------------------------------------------------------------------------------------------------
 
 data SignalPair = SignalPair Signal Signal deriving (Eq, Show)
@@ -21,6 +21,9 @@ pair = SignalPair
 
 hasCorrectOrder :: SignalPair -> Bool
 hasCorrectOrder (SignalPair leftHand rightHand) = leftHand <= rightHand
+
+toList :: SignalPair -> [Signal]
+toList (SignalPair leftHand rightHand) = [leftHand, rightHand]
 
 -- ---------------------------------------------------------------------------------------------------------------------
 -- Read instance

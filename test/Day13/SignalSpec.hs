@@ -55,3 +55,19 @@ spec = do
     it "Should compare fourth example" $ do
       compare ((read :: String -> Signal) "[[4,4],4,4]") (read "[[4,4],4,4,4]") `shouldBe` LT
       compare ((read :: String -> Signal) "[[4,4],4,4,4]") (read "[[4,4],4,4]") `shouldBe` GT
+
+  describe "When determine divider package" $ do
+    it "Should return False for []" $ do
+      (isDivider . group $ []) `shouldBe` False
+
+    it "Should return False for [1]" $ do
+      (isDivider . group $ [value 1]) `shouldBe` False
+
+    it "Should return False for [[1]]" $ do
+      (isDivider . group $ [group [value 1]]) `shouldBe` False
+
+    it "Should return True for [[2]]" $ do
+      (isDivider . group $ [group [value 2]]) `shouldBe` True
+
+    it "Should return True for [[6]]" $ do
+      (isDivider . group $ [group [value 6]]) `shouldBe` True
