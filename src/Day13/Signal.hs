@@ -1,15 +1,17 @@
-module Day13.Signal (Signal, group, value) where
+module Day13.Signal (Signal, group, value, parseGroup) where
 
 import Text.ParserCombinators.Parsec
   ( GenParser,
     ParseError,
-    between,
+    (<|>),
+  )
+import qualified Text.ParserCombinators.Parsec as Parsec
+  ( between,
     char,
     digit,
     many1,
     parse,
     sepBy,
-    (<|>),
   )
 
 -- ---------------------------------------------------------------------------------------------------------------------
@@ -21,7 +23,7 @@ data Signal = Value Int | Group [Signal] deriving (Eq, Show)
 instance Read Signal where
   readsPrec _ input = [(parsed, [])]
     where
-      parsed = toSignal . parseSignal $ input
+      parsed = toSignal . parse $ input
 
       toSignal :: Either ParseError Signal -> Signal
       toSignal (Right signal) = signal
@@ -38,13 +40,13 @@ value = Value
 -- ---------------------------------------------------------------------------------------------------------------------
 
 parseInt :: GenParser Char st Int
-parseInt = read <$> many1 digit
+parseInt = read <$> Parsec.many1 Parsec.digit
 
 parseValue :: GenParser Char st Signal
 parseValue = Value <$> parseInt
 
 parseSignals :: GenParser Char st [Signal]
-parseSignals = sepBy parseGroupOrValue (char ',')
+parseSignals = Parsec.sepBy parseGroupOrValue (Parsec.char ',')
 
 parseGroupOrValue :: GenParser Char st Signal
 parseGroupOrValue = parseValue <|> parseGroup
@@ -53,7 +55,7 @@ parseGroupContent :: GenParser Char st [Signal]
 parseGroupContent = parseSignals <|> return []
 
 parseGroup :: GenParser Char st Signal
-parseGroup = Group <$> between (char '[') (char ']') parseGroupContent
+parseGroup = Group <$> Parsec.between (Parsec.char '[') (Parsec.char ']') parseGroupContent
 
-parseSignal :: String -> Either ParseError Signal
-parseSignal = parse parseGroup "(unknown)"
+parse :: String -> Either ParseError Signal
+parse = Parsec.parse parseGroup "(unknown)"
