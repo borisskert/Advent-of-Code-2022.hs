@@ -1,4 +1,4 @@
-module Day13.SignalPair (SignalPair, pair, parse) where
+module Day13.SignalPair (SignalPair, pair, parse, parseSignalPair) where
 
 import Day13.Signal
 import Text.ParserCombinators.Parsec
@@ -12,6 +12,13 @@ import qualified Text.ParserCombinators.Parsec as Parsec
 
 data SignalPair = SignalPair Signal Signal deriving (Eq, Show)
 
+pair :: Signal -> Signal -> SignalPair
+pair = SignalPair
+
+-- ---------------------------------------------------------------------------------------------------------------------
+-- Read instance
+-- ---------------------------------------------------------------------------------------------------------------------
+
 instance Read SignalPair where
   readsPrec _ input = [(parsed, [])]
     where
@@ -20,9 +27,6 @@ instance Read SignalPair where
       toSignalPair :: Either ParseError SignalPair -> SignalPair
       toSignalPair (Right signalPair) = signalPair
       toSignalPair (Left parseError) = error . show $ parseError
-
-pair :: Signal -> Signal -> SignalPair
-pair = SignalPair
 
 -- ---------------------------------------------------------------------------------------------------------------------
 -- Parsec Signal Parser

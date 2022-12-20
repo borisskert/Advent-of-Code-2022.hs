@@ -20,6 +20,16 @@ import qualified Text.ParserCombinators.Parsec as Parsec
 
 data Signal = Value Int | Group [Signal] deriving (Eq, Show)
 
+group :: [Signal] -> Signal
+group = Group
+
+value :: Int -> Signal
+value = Value
+
+-- ---------------------------------------------------------------------------------------------------------------------
+-- Read instance
+-- ---------------------------------------------------------------------------------------------------------------------
+
 instance Read Signal where
   readsPrec _ input = [(parsed, [])]
     where
@@ -28,12 +38,6 @@ instance Read Signal where
       toSignal :: Either ParseError Signal -> Signal
       toSignal (Right signal) = signal
       toSignal (Left parseError) = error . show $ parseError
-
-group :: [Signal] -> Signal
-group = Group
-
-value :: Int -> Signal
-value = Value
 
 -- ---------------------------------------------------------------------------------------------------------------------
 -- Parsec Signal Parser
