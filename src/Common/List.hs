@@ -11,6 +11,7 @@ module Common.List
     takeAscendingOn,
     append,
     minimumOn,
+    zipWithIndex,
   )
 where
 
@@ -94,3 +95,6 @@ append x xs = xs ++ [x]
 
 minimumOn :: (Ord b) => (a -> b) -> [a] -> a
 minimumOn fn = minimumBy (\a b -> compare (fn a) (fn b))
+
+zipWithIndex :: [a] -> [(Int, a)]
+zipWithIndex = zip [0 ..]
