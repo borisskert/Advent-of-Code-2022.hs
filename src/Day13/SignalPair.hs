@@ -42,4 +42,4 @@ parseSignalPair = do
   SignalPair x <$> parseGroup
 
 parse :: String -> Either ParseError SignalPair
-parse = Parsec.parse parseSignalPair "(unknown)"
+parse = Parsec.parse parseSignalPair "(ParseError while parsing SignalPair)"

@@ -1,8 +1,5 @@
 module Day13.SignalPairs (SignalPairs, fromList, toList) where
 
---    return,
-
-import Data.Maybe (catMaybes, maybe)
 import Day13.SignalPair (SignalPair, parseSignalPair)
 import Text.ParserCombinators.Parsec
   ( GenParser,
@@ -12,16 +9,10 @@ import Text.ParserCombinators.Parsec
 import qualified Text.ParserCombinators.Parsec as Parsec
   ( char,
     choice,
-    endBy,
     eof,
-    lookAhead,
     many,
-    option,
-    optionMaybe,
     optional,
     parse,
-    sepBy,
-    sepEndBy,
     string,
     try,
   )
@@ -75,4 +66,4 @@ parseSignalPairsOrEmpty :: GenParser Char st SignalPairs
 parseSignalPairsOrEmpty = parseSignalPairs <|> return (SignalPairs [])
 
 parse :: String -> Either ParseError SignalPairs
-parse = Parsec.parse parseSignalPairsOrEmpty "(unknown)"
+parse = Parsec.parse parseSignalPairsOrEmpty "(ParseError while parsing SignalPairs)"

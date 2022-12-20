@@ -72,4 +72,4 @@ parseGroup :: GenParser Char st Signal
 parseGroup = Group <$> Parsec.between (Parsec.char '[') (Parsec.char ']') parseGroupContent
 
 parse :: String -> Either ParseError Signal
-parse = Parsec.parse parseGroup "(unknown)"
+parse = Parsec.parse parseGroup "(ParseError while parsing Signal)"
