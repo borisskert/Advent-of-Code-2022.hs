@@ -1,4 +1,4 @@
-module Day13.SignalPairs (SignalPairs, fromList) where
+module Day13.SignalPairs (SignalPairs, fromList, toList) where
 
 import Day13.SignalPair (SignalPair, parseSignalPair)
 import Text.ParserCombinators.Parsec
@@ -15,6 +15,9 @@ newtype SignalPairs = SignalPairs [SignalPair] deriving (Eq, Show)
 
 fromList :: [SignalPair] -> SignalPairs
 fromList = SignalPairs
+
+toList :: SignalPairs -> [SignalPair]
+toList (SignalPairs pairs) = pairs
 
 -- ---------------------------------------------------------------------------------------------------------------------
 -- Read instance
