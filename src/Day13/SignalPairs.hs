@@ -1,14 +1,29 @@
 module Day13.SignalPairs (SignalPairs, fromList, toList) where
 
+--    return,
+
+import Data.Maybe (catMaybes, maybe)
 import Day13.SignalPair (SignalPair, parseSignalPair)
 import Text.ParserCombinators.Parsec
   ( GenParser,
     ParseError,
+    (<|>),
   )
 import qualified Text.ParserCombinators.Parsec as Parsec
-  ( parse,
+  ( char,
+    choice,
+    endBy,
+    eof,
+    lookAhead,
+    many,
+    option,
+    optionMaybe,
+    optional,
+    parse,
     sepBy,
+    sepEndBy,
     string,
+    try,
   )
 
 newtype SignalPairs = SignalPairs [SignalPair] deriving (Eq, Show)
@@ -36,8 +51,28 @@ instance Read SignalPairs where
 -- Parsec SignalPairs Parser
 -- ---------------------------------------------------------------------------------------------------------------------
 
+parseEnd :: GenParser Char st ()
+parseEnd = do
+  _ <- Parsec.optional $ Parsec.char '\n'
+  _ <- Parsec.eof
+  return ()
+
+parseSeparator :: GenParser Char st ()
+parseSeparator = do
+  _ <- Parsec.string "\n\n"
+  return ()
+
+parseSignalPairList :: GenParser Char st [SignalPair]
+parseSignalPairList = Parsec.many $ do
+  x <- parseSignalPair
+  Parsec.choice [Parsec.try parseSeparator, parseEnd]
+  return x
+
 parseSignalPairs :: GenParser Char st SignalPairs
-parseSignalPairs = SignalPairs <$> Parsec.sepBy parseSignalPair (Parsec.string "\n\n")
+parseSignalPairs = SignalPairs <$> parseSignalPairList
+
+parseSignalPairsOrEmpty :: GenParser Char st SignalPairs
+parseSignalPairsOrEmpty = parseSignalPairs <|> return (SignalPairs [])
 
 parse :: String -> Either ParseError SignalPairs
-parse = Parsec.parse parseSignalPairs "(unknown)"
+parse = Parsec.parse parseSignalPairsOrEmpty "(unknown)"

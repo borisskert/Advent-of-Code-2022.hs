@@ -1,4 +1,4 @@
-module Day13.SignalParisSpec (spec) where
+module Day13.SignalPairsSpec (spec) where
 
 import Day13.Signal (group, value)
 import Day13.SignalPair (pair)
@@ -25,4 +25,15 @@ spec = do
               ( group [value 1, group [value 2, group [value 3, group [value 4, group [value 5, value 6, value 7]]]], value 8, value 9]
               )
               (group [value 1, group [value 2, group [value 3, group [value 4, group [value 5, value 6, value 0]]]], value 8, value 9])
+          ]
+
+    it "Should read empty input" $ do
+      read "" `shouldBe` fromList []
+
+    it "Should read input with trailing newline" $ do
+      read "[1,1,3,1,1]\n[1,1,5,1,1]\n"
+        `shouldBe` fromList
+          [ pair
+              (group [value 1, value 1, value 3, value 1, value 1])
+              (group [value 1, value 1, value 5, value 1, value 1])
           ]
