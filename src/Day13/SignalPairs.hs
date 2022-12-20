@@ -17,6 +17,10 @@ import qualified Text.ParserCombinators.Parsec as Parsec
     try,
   )
 
+-- ---------------------------------------------------------------------------------------------------------------------
+-- SignalPairs data structure
+-- ---------------------------------------------------------------------------------------------------------------------
+
 newtype SignalPairs = SignalPairs [SignalPair] deriving (Eq, Show)
 
 fromList :: [SignalPair] -> SignalPairs

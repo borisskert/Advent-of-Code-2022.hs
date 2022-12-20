@@ -10,6 +10,10 @@ import qualified Text.ParserCombinators.Parsec as Parsec
     parse,
   )
 
+-- ---------------------------------------------------------------------------------------------------------------------
+-- SignalPair data structure 
+-- ---------------------------------------------------------------------------------------------------------------------
+
 data SignalPair = SignalPair Signal Signal deriving (Eq, Show)
 
 pair :: Signal -> Signal -> SignalPair
