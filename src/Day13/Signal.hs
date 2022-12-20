@@ -27,6 +27,16 @@ value :: Int -> Signal
 value = Value
 
 -- ---------------------------------------------------------------------------------------------------------------------
+-- Ord instance
+-- ---------------------------------------------------------------------------------------------------------------------
+
+instance Ord Signal where
+  compare (Value x) (Value y) = compare x y
+  compare leftHand@(Group _) rightHand@(Value _) = compare leftHand (Group [rightHand])
+  compare leftHand@(Value _) rightHand@(Group _) = compare (Group [leftHand]) rightHand
+  compare (Group x) (Group y) = compare x y
+
+-- ---------------------------------------------------------------------------------------------------------------------
 -- Read instance
 -- ---------------------------------------------------------------------------------------------------------------------
 
