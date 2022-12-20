@@ -11,3 +11,7 @@ spec = do
   describe "Determine which pairs of packets are already in the right order. What is the sum of the indices of those pairs?" $ do
     it "In the above example, the pairs in the right order are 1, 2, 4, and 6; the sum of these indices is 13." $ do
       indicesSum exampleInput `shouldBe` 13
+
+  describe "Organize all of the packets into the correct order. What is the decoder key for the distress signal?" $ do
+    it "In this example, the divider packets are 10th and 14th, and so the decoder key is 140." $ do
+      decoderKey exampleInput `shouldBe` 140
