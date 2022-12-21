@@ -17,7 +17,7 @@ spec = do
       (length . sandUnits $ simulation) `shouldBe` 0
 
     it "Should determine drop point at column 500" $ do
-      dropPoint simulation `shouldBe` fromTuple (500, 8)
+      dropPoint simulation `shouldBe` (Just . fromTuple $ (500, 8))
 
     describe "When simulating sand unit's drop #1" $ do
       let one = oneDrop simulation
@@ -135,3 +135,10 @@ spec = do
                 it "Should show simulation state" $ do
                   show drop24
                     `shouldBe` "......+...\n..........\n......o...\n.....ooo..\n....#ooo##\n...o#ooo#.\n..###ooo#.\n....oooo#.\n.o.ooooo#.\n#########."
+
+    describe "When drop all until falling into abyss" $ do
+      let alldropped = dropAll simulation
+      let sandUnitsAll = sandUnits alldropped
+
+      it "Should drop 24 sand units" $ do
+        length sandUnitsAll `shouldBe` 24
