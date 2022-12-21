@@ -14,6 +14,6 @@ day14part1 =
       isDefault = True,
       run = do
         input <- readFileContents "puzzleinput/day14.txt"
-        let result = sandUnits input
+        let result = sandUnitsUntilFall input
         print result
     }

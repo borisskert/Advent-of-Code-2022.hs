@@ -2,7 +2,7 @@ module Day14.ReservoirSpec (spec) where
 
 import Common.Grid (fromTuple)
 import Day14.Material
-import Day14.Reservoir (empty, depthAt, insertScans, sandUnits, toList)
+import Day14.Reservoir (depthAt, empty, insertScans, sandUnits, toList, withGround)
 import Test.Hspec
 
 exampleInput :: String
@@ -55,3 +55,58 @@ spec = do
 
     it "Should have depth 4 at column 502" $ do
       depthAt 502 reservoir `shouldBe` 4
+
+    describe "When add ground to reservoir" $ do
+      let reservoirWithGround = withGround reservoir
+
+      it "Should have ground in positions" $ do
+        toList reservoirWithGround
+          `shouldBe` [ (fromTuple (489, 11), rock),
+                       (fromTuple (490, 11), rock),
+                       (fromTuple (491, 11), rock),
+                       (fromTuple (492, 11), rock),
+                       (fromTuple (493, 11), rock),
+                       (fromTuple (494, 9), rock),
+                       (fromTuple (494, 11), rock),
+                       (fromTuple (495, 9), rock),
+                       (fromTuple (495, 11), rock),
+                       (fromTuple (496, 6), rock),
+                       (fromTuple (496, 9), rock),
+                       (fromTuple (496, 11), rock),
+                       (fromTuple (497, 6), rock),
+                       (fromTuple (497, 9), rock),
+                       (fromTuple (497, 11), rock),
+                       (fromTuple (498, 4), rock),
+                       (fromTuple (498, 5), rock),
+                       (fromTuple (498, 6), rock),
+                       (fromTuple (498, 9), rock),
+                       (fromTuple (498, 11), rock),
+                       (fromTuple (499, 9), rock),
+                       (fromTuple (499, 11), rock),
+                       (fromTuple (500, 0), sandSource),
+                       (fromTuple (500, 9), rock),
+                       (fromTuple (500, 11), rock),
+                       (fromTuple (501, 9), rock),
+                       (fromTuple (501, 11), rock),
+                       (fromTuple (502, 4), rock),
+                       (fromTuple (502, 5), rock),
+                       (fromTuple (502, 6), rock),
+                       (fromTuple (502, 7), rock),
+                       (fromTuple (502, 8), rock),
+                       (fromTuple (502, 9), rock),
+                       (fromTuple (502, 11), rock),
+                       (fromTuple (503, 4), rock),
+                       (fromTuple (503, 11), rock),
+                       (fromTuple (504, 11), rock),
+                       (fromTuple (505, 11), rock),
+                       (fromTuple (506, 11), rock),
+                       (fromTuple (507, 11), rock),
+                       (fromTuple (508, 11), rock),
+                       (fromTuple (509, 11), rock),
+                       (fromTuple (510, 11), rock),
+                       (fromTuple (511, 11), rock)
+                     ]
+
+      it "Should show ground" $ do
+        show reservoirWithGround
+          `shouldBe` "...........+...........\n.......................\n.......................\n.......................\n.........#...##........\n.........#...#.........\n.......###...#.........\n.............#.........\n.............#.........\n.....#########.........\n.......................\n#######################"
