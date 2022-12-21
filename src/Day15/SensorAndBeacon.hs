@@ -1,4 +1,4 @@
-module Day15.SensorAndBeacon (BeaconAndSensor, from) where
+module Day15.SensorAndBeacon (BeaconAndSensor, from, readMany) where
 
 import Common.OctaGridPosition (Position)
 import qualified Common.OctaGridPosition as Position (from)
@@ -22,8 +22,15 @@ data BeaconAndSensor = BeaconAndSensor Position Position deriving (Eq, Show)
 from :: Position -> Position -> BeaconAndSensor
 from = BeaconAndSensor
 
+-- | -------------------------------------------------------------------------------------------------------------------
+-- | Read instance
+-- | -------------------------------------------------------------------------------------------------------------------
+
 instance Read BeaconAndSensor where
   readsPrec _ = readBy parse
+
+readMany :: String -> [BeaconAndSensor]
+readMany = map read . lines
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | BeaconAndSensor Parser
