@@ -17,6 +17,7 @@ module Common.Grid
     lookup,
     lookupPositions,
     find,
+    member,
     each,
     mapGrid,
     columns,
@@ -44,7 +45,18 @@ module Common.Grid
 where
 
 import Common.BidirectionalMap (BidirectionalMap)
-import qualified Common.BidirectionalMap as BidirectionalMap (elems, empty, find, fromList, insert, keys, lookup, lookupKey, toList)
+import qualified Common.BidirectionalMap as BidirectionalMap
+  ( elems,
+    empty,
+    find,
+    fromList,
+    insert,
+    keys,
+    lookup,
+    lookupKey,
+    member,
+    toList,
+  )
 import qualified Common.List as List
 import Common.Path (Path)
 import qualified Common.Path as Path (append, singleton)
@@ -113,6 +125,9 @@ lookupPositions value (Grid _ gridMap) = BidirectionalMap.lookupKey value gridMa
 
 lookupPair :: (Ord p) => p -> Grid p a -> Maybe (p, a)
 lookupPair p (Grid _ gridMap) = (p,) <$> BidirectionalMap.lookup p gridMap
+
+member :: (Ord p) => p -> Grid p a -> Bool
+member p (Grid _ gridMap) = BidirectionalMap.member p gridMap
 
 each :: (Ord p, Ord a) => ((p, a) -> (p, a)) -> Grid p a -> Grid p a
 each mapper (Grid size gridMap) = Grid size newGridMap

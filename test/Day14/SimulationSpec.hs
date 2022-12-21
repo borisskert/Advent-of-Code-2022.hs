@@ -6,7 +6,7 @@ import Day14.Simulation
 import Test.Hspec
 
 exampleInput :: String
-exampleInput = "x=495, y=2..7\ny=7, x=495..501\nx=501, y=3..7\nx=498, y=2..4\nx=506, y=1..2\nx=498, y=10..13\nx=504, y=10..13\ny=13, x=498..504\n"
+exampleInput = "498,4 -> 498,6 -> 496,6\n503,4 -> 502,4 -> 502,9 -> 494,9\n"
 
 spec :: Spec
 spec = do
@@ -15,6 +15,9 @@ spec = do
 
     it "Should have no sand" $ do
       (length . sandUnits $ simulation) `shouldBe` 0
+
+    it "Should determine drop point at column 500" $ do
+      dropPoint simulation `shouldBe` fromTuple (500, 8)
 
     describe "When simulating sand unit's drop" $ do
       let one = oneDrop simulation

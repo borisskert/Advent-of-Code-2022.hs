@@ -1,4 +1,4 @@
-module Day14.Reservoir (Reservoir, toList, insertScans, empty, rock, sandSource, sandUnits, heightAt) where
+module Day14.Reservoir (Reservoir, toList, insertScans, empty, rock, sandSource, sandUnits, depthAt, findSandSource, toGrid, insertSandAt) where
 
 import Common.Grid (Grid)
 import qualified Common.Grid as Grid (columnAt, empty, fromTuple, height, insert, lookupPositions, toList, toTuple)
@@ -35,16 +35,22 @@ toList = Grid.toList . toGrid
 sandUnits :: Reservoir -> [Position]
 sandUnits = Grid.lookupPositions sand . toGrid
 
-heightAt :: Int -> Reservoir -> Int
-heightAt y reservoir =
+depthAt :: Int -> Reservoir -> Int
+depthAt x reservoir =
   minimumOr (Grid.height grid)
     . map (\(p, _) -> snd . Grid.toTuple $ p)
     . filter ((/= sandSource) . snd)
-    . Grid.columnAt y
+    . Grid.columnAt x
     . toGrid
     $ reservoir
   where
     grid = toGrid reservoir
+
+findSandSource :: Reservoir -> Position
+findSandSource = head . Grid.lookupPositions sandSource . toGrid
+
+insertSandAt :: Position -> Reservoir -> Reservoir
+insertSandAt position = Reservoir . Grid.insert position sand . toGrid
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | Instance Show

@@ -2,7 +2,7 @@ module Day14.ReservoirSpec (spec) where
 
 import Common.Grid (fromTuple)
 import Day14.Material
-import Day14.Reservoir (empty, heightAt, insertScans, sandUnits, toList)
+import Day14.Reservoir (empty, depthAt, insertScans, sandUnits, toList)
 import Test.Hspec
 
 exampleInput :: String
@@ -41,17 +41,17 @@ spec = do
     it "Should have no sand units" $ do
       sandUnits reservoir `shouldBe` []
 
-    it "Should have height 9 at column 500" $ do
-      heightAt 500 reservoir `shouldBe` 9
+    it "Should have depth 9 at column 500" $ do
+      depthAt 500 reservoir `shouldBe` 9
 
-    it "Should have height 9 at column 499" $ do
-      heightAt 499 reservoir `shouldBe` 9
+    it "Should have depth 9 at column 499" $ do
+      depthAt 499 reservoir `shouldBe` 9
 
-    it "Should have height 9 at column 501" $ do
-      heightAt 501 reservoir `shouldBe` 9
+    it "Should have depth 9 at column 501" $ do
+      depthAt 501 reservoir `shouldBe` 9
 
-    it "Should have height 4 at column 498" $ do
-      heightAt 498 reservoir `shouldBe` 4
+    it "Should have depth 4 at column 498" $ do
+      depthAt 498 reservoir `shouldBe` 4
 
-    it "Should have height 4 at column 502" $ do
-      heightAt 502 reservoir `shouldBe` 4
+    it "Should have depth 4 at column 502" $ do
+      depthAt 502 reservoir `shouldBe` 4
