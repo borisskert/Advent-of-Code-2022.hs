@@ -1,4 +1,4 @@
-module Day14.RegolithReservoir (sandUnitsUntilFall, showReservoir, sandUnitsUntilRest) where
+module Day14.RegolithReservoir (sandUnitsUntilFall, sandUnitsUntilRest) where
 
 import Day14.Reservoir (empty, insertScans, withGround)
 import Day14.Simulation (dropAll, from)
@@ -11,6 +11,3 @@ sandUnitsUntilFall = length . Simulation.sandUnits . dropAll . from . (`insertSc
 -- Using your scan, simulate the falling sand until the source of the sand becomes blocked. How many units of sand come to rest?
 sandUnitsUntilRest :: String -> Int
 sandUnitsUntilRest = length . Simulation.sandUnits . dropAll . from . withGround . (`insertScans` empty) . read
-
-showReservoir :: String -> String
-showReservoir = show .  dropAll . from . withGround . (`insertScans` empty) . read

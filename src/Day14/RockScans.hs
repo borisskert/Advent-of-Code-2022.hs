@@ -3,7 +3,7 @@ module Day14.RockScans (RockScans, fromList, toList) where
 import Common.Read (readBy)
 import Control.Monad (void)
 import Day14.RockScan (RockScan)
-import qualified Day14.RockScan as RockScan (parseOne)
+import qualified Day14.RockScan as RockScan (parseRockScan)
 import Text.ParserCombinators.Parsec
   ( GenParser,
     ParseError,
@@ -38,7 +38,7 @@ separator :: GenParser Char st ()
 separator = void (Parsec.char '\n')
 
 manyRockScans :: GenParser Char st [RockScan]
-manyRockScans = Parsec.sepEndBy RockScan.parseOne separator
+manyRockScans = Parsec.sepEndBy RockScan.parseRockScan separator
 
 parseRockScans :: GenParser Char st RockScans
 parseRockScans = RockScans <$> manyRockScans

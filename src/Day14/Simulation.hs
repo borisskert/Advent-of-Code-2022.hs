@@ -2,9 +2,9 @@ module Day14.Simulation (from, oneDrop, reservoir, sandUnits, dropPoint, dropAll
 
 import qualified Common.Grid as Grid (allSouthOf, eastOf, southEastOf, southOf, southWestOf, westOf)
 import Common.OctaGridPosition (Position)
-import Data.Maybe (isJust, isNothing, fromMaybe, fromJust)
+import Data.Maybe (fromJust, fromMaybe, isJust, isNothing)
 import Day14.Reservoir (Reservoir)
-import qualified Day14.Reservoir as Reservoir (findSandSource, insertSandAt, sandUnits, toGrid, isFull)
+import qualified Day14.Reservoir as Reservoir (findSandSource, insertSandAt, isFull, sandUnits, toGrid)
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | Simulation data structure
@@ -18,7 +18,7 @@ oneDrop :: Simulation -> Simulation
 oneDrop simulation = fromMaybe simulation . oneDropMaybe $ simulation
 
 oneDropMaybe :: Simulation -> Maybe Simulation
-oneDropMaybe simulation@(Simulation reservoir') = maybe Nothing (Just . Simulation . (`Reservoir.insertSandAt` reservoir')) . dropPoint $ simulation
+oneDropMaybe simulation@(Simulation reservoir') = fmap (Simulation . (`Reservoir.insertSandAt` reservoir')) . dropPoint $ simulation
 
 dropAll :: Simulation -> Simulation
 dropAll simulation
@@ -35,9 +35,9 @@ sandUnits = Reservoir.sandUnits . reservoir
 
 dropPoint :: Simulation -> Maybe Position
 dropPoint simulation@(Simulation reservoir')
-   | isNothing designatedDropPosition = Nothing
-   | Reservoir.isFull reservoir' = Nothing
-   | otherwise = designatedDropPosition
+  | isNothing designatedDropPosition = Nothing
+  | Reservoir.isFull reservoir' = Nothing
+  | otherwise = designatedDropPosition
   where
     source = Reservoir.findSandSource reservoir'
     designatedDropPosition = dropPointFrom source simulation

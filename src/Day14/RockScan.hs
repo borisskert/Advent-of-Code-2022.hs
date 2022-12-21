@@ -1,4 +1,4 @@
-module Day14.RockScan (RockScan, fromList, toList, parseOne, deflate) where
+module Day14.RockScan (RockScan, fromList, toList, parseRockScan, deflate) where
 
 import Common.List (distinct, range)
 import Common.Read
@@ -48,10 +48,10 @@ instance Read RockScan where
 -- | Parsec RockScan Parser
 -- | -------------------------------------------------------------------------------------------------------------------
 parse :: String -> Either ParseError RockScan
-parse = Parsec.parse parseOne "(ParseError while parsing RockScan)"
+parse = Parsec.parse parseRockScan "(ParseError while parsing RockScan)"
 
-parseOne :: GenParser Char st RockScan
-parseOne = RockScan <$> manyTuples
+parseRockScan :: GenParser Char st RockScan
+parseRockScan = RockScan <$> manyTuples
 
 separator :: GenParser Char st ()
 separator = void (Parsec.string " -> ")
