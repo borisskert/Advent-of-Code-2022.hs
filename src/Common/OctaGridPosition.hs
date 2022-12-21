@@ -1,5 +1,6 @@
 module Common.OctaGridPosition
   ( Position,
+    from,
     areAdjacent,
     stepsNorth,
     stepsSouth,
@@ -11,6 +12,9 @@ where
 import qualified Common.Grid as Grid (Position, adjacent, fromTuple, x, y)
 
 data Position = Position Int Int deriving (Eq, Show, Ord)
+
+from :: Int -> Int -> Position
+from = Position
 
 instance Grid.Position Position where
   x (Position myX _) = myX
