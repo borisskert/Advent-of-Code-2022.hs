@@ -1,7 +1,7 @@
 module Day14.ReservoirSpec (spec) where
 
 import Common.Grid (fromTuple)
-import Day14.Reservoir (empty, insertScans, rock, toList)
+import Day14.Reservoir (empty, insertScans, rock, sandSource, toList)
 import Test.Hspec
 
 exampleInput :: String
@@ -23,6 +23,7 @@ spec = do
                      (fromTuple (498, 6), rock),
                      (fromTuple (498, 9), rock),
                      (fromTuple (499, 9), rock),
+                     (fromTuple (500, 0), sandSource),
                      (fromTuple (500, 9), rock),
                      (fromTuple (501, 9), rock),
                      (fromTuple (502, 4), rock),
