@@ -30,6 +30,14 @@ module Common.Grid
     allSouthOf,
     allWestOf,
     allEastOf,
+    northOf,
+    southOf,
+    westOf,
+    eastOf,
+    northWestOf,
+    northEastOf,
+    southWestOf,
+    southEastOf,
     insert,
     width,
     height,
@@ -197,6 +205,54 @@ allWestOf pos _ = map (fromTuple . (,y pos)) [(x pos - 1), (x pos - 2) .. 0]
 
 allEastOf :: (Position p) => p -> Grid p a -> [p]
 allEastOf pos (Grid ((_, maxX'), _) _) = map (fromTuple . (,y pos)) [x pos + 1 .. maxX']
+
+northOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+northOf pos grid = (northPos, value)
+  where
+    northPos = fromTuple (x pos, y pos - 1)
+    value = (`lookup` grid) northPos
+
+southOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+southOf pos grid = (southPos, value)
+  where
+    southPos = fromTuple (x pos, y pos + 1)
+    value = (`lookup` grid) southPos
+
+westOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+westOf pos grid = (westPos, value)
+  where
+    westPos = fromTuple (x pos - 1, y pos)
+    value = (`lookup` grid) westPos
+
+eastOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+eastOf pos grid = (eastPos, value)
+  where
+    eastPos = fromTuple (x pos + 1, y pos)
+    value = (`lookup` grid) eastPos
+
+northWestOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+northWestOf pos grid = (northWestPos, value)
+  where
+    northWestPos = fromTuple (x pos - 1, y pos - 1)
+    value = (`lookup` grid) northWestPos
+
+northEastOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+northEastOf pos grid = (northEastPos, value)
+  where
+    northEastPos = fromTuple (x pos + 1, y pos - 1)
+    value = (`lookup` grid) northEastPos
+
+southWestOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+southWestOf pos grid = (southWestPos, value)
+  where
+    southWestPos = fromTuple (x pos - 1, y pos + 1)
+    value = (`lookup` grid) southWestPos
+
+southEastOf :: (Ord p, Position p) => p -> Grid p a -> (p, Maybe a)
+southEastOf pos grid = (southEastPos, value)
+  where
+    southEastPos = fromTuple (x pos + 1, y pos + 1)
+    value = (`lookup` grid) southEastPos
 
 insert :: (Position p, Ord p, Ord a) => p -> a -> Grid p a -> Grid p a
 insert pos value (Grid ((minX', maxX'), (minY', maxY')) gridMap) = Grid (newWidth, newHeight) newGridMap
