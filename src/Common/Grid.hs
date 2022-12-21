@@ -21,6 +21,8 @@ module Common.Grid
     mapGrid,
     columns,
     rows,
+    columnAt,
+    rowAt,
     keys,
     elems,
     allNorthOf,
@@ -34,6 +36,10 @@ module Common.Grid
     adjacentOf,
     findPath,
     Path,
+    minX,
+    maxX,
+    minY,
+    maxY,
   )
 where
 
@@ -81,9 +87,9 @@ fromLines input = Grid size gridMap
   where
     inputLines = lines input
     gridMap = fromLinesIntoMap inputLines
-    maxX = maybe 0 (subtract 1 . length) . List.safeHead $ inputLines
-    maxY = length inputLines - 1
-    size = ((0, maxX), (0, maxY))
+    maxX' = maybe 0 (subtract 1 . length) . List.safeHead $ inputLines
+    maxY' = length inputLines - 1
+    size = ((0, maxX'), (0, maxY'))
 
 fromLinesIntoMap :: (Position p, Ord p, Value a, Ord a) => [[Char]] -> BidirectionalMap p a
 fromLinesIntoMap =
@@ -105,6 +111,9 @@ find p (Grid _ gridMap) = BidirectionalMap.find p gridMap
 lookupPositions :: (Ord a) => a -> Grid p a -> [p]
 lookupPositions value (Grid _ gridMap) = BidirectionalMap.lookupKey value gridMap
 
+lookupPair :: (Ord p) => p -> Grid p a -> Maybe (p, a)
+lookupPair p (Grid _ gridMap) = (p,) <$> BidirectionalMap.lookup p gridMap
+
 each :: (Ord p, Ord a) => ((p, a) -> (p, a)) -> Grid p a -> Grid p a
 each mapper (Grid size gridMap) = Grid size newGridMap
   where
@@ -119,9 +128,9 @@ toLines (Grid size gridMap) =
     . map (\y' -> map (fromValue . (`BidirectionalMap.lookup` gridMap) . fromTuple . (,y')) xs)
     $ ys
   where
-    ((minX, maxX), (minY, maxY)) = size
-    xs = [minX, (minX + 1) .. maxX]
-    ys = [minY, (minY + 1) .. maxY]
+    ((minX', maxX'), (minY', maxY')) = size
+    xs = [minX', (minX' + 1) .. maxX']
+    ys = [minY', (minY' + 1) .. maxY']
 
 fromList :: (Position p, Ord p, Ord a) => [(p, a)] -> Grid p a
 fromList = foldl (flip insertPair) empty
@@ -146,6 +155,16 @@ columns grid@(Grid (_, _) _) = map (\x' -> map (fromTuple . (x',)) [0 .. gridHei
     gridHeight = height grid
     gridWidth = width grid
 
+rowAt :: (Position p, Ord p) => Int -> Grid p a -> [(p, a)]
+rowAt y' grid = mapMaybe ((`lookupPair` grid) . fromTuple . (,y')) [0 .. gridWidth - 1]
+  where
+    gridWidth = width grid
+
+columnAt :: (Position p, Ord p) => Int -> Grid p a -> [(p, a)]
+columnAt x' grid = mapMaybe ((`lookupPair` grid) . fromTuple . (x',)) [0 .. gridHeight - 1]
+  where
+    gridHeight = height grid
+
 keys :: Grid p a -> [p]
 keys (Grid _ gridMap) = BidirectionalMap.keys gridMap
 
@@ -156,30 +175,30 @@ allNorthOf :: (Position p) => p -> Grid p a -> [p]
 allNorthOf pos _ = map (fromTuple . (x pos,)) [(y pos - 1), (y pos - 2) .. 0]
 
 allSouthOf :: (Position p) => p -> Grid p a -> [p]
-allSouthOf pos (Grid (_, (_, maxY)) _) = map (fromTuple . (x pos,)) [y pos + 1 .. maxY]
+allSouthOf pos (Grid (_, (_, maxY')) _) = map (fromTuple . (x pos,)) [y pos + 1 .. maxY']
 
 allWestOf :: (Position p) => p -> Grid p a -> [p]
 allWestOf pos _ = map (fromTuple . (,y pos)) [(x pos - 1), (x pos - 2) .. 0]
 
 allEastOf :: (Position p) => p -> Grid p a -> [p]
-allEastOf pos (Grid ((_, maxX), _) _) = map (fromTuple . (,y pos)) [x pos + 1 .. maxX]
+allEastOf pos (Grid ((_, maxX'), _) _) = map (fromTuple . (,y pos)) [x pos + 1 .. maxX']
 
 insert :: (Position p, Ord p, Ord a) => p -> a -> Grid p a -> Grid p a
-insert pos value (Grid ((minX, maxX), (minY, maxY)) gridMap) = Grid (newWidth, newHeight) newGridMap
+insert pos value (Grid ((minX', maxX'), (minY', maxY')) gridMap) = Grid (newWidth, newHeight) newGridMap
   where
     (posX, posY) = toTuple pos
-    newWidth = (min minX posX, max maxX posX)
-    newHeight = (min minY posY, max maxY posY)
+    newWidth = (min minX' posX, max maxX' posX)
+    newHeight = (min minY' posY, max maxY' posY)
     newGridMap = BidirectionalMap.insert pos value gridMap
 
 insertPair :: (Position p, Ord p, Ord a) => (p, a) -> Grid p a -> Grid p a
 insertPair (p, a) = insert p a
 
 width :: Grid p a -> Int
-width (Grid ((minX, maxX), _) _) = maxX - minX + 1
+width (Grid ((minX', maxX'), _) _) = maxX' - minX' + 1
 
 height :: Grid p a -> Int
-height (Grid (_, (minY, maxY)) _) = maxY - minY + 1
+height (Grid (_, (minY', maxY')) _) = maxY' - minY' + 1
 
 subgrid :: (Position p, Ord p, Ord a) => p -> (Int, Int) -> Grid p a -> Grid p a
 subgrid pos (width', height') grid = newGrid
@@ -193,11 +212,7 @@ subgrid pos (width', height') grid = newGrid
     newGrid = foldl (\g (k, v) -> insert k v g) empty pairs
 
 adjacentOf :: (Position p, Ord p) => p -> Grid p a -> [(p, a)]
-adjacentOf myPos myMap = mapMaybe lookupPair . adjacent $ myPos
-  where
-    lookupPair pos = fmap (pos,) found
-      where
-        found = lookup pos myMap
+adjacentOf myPos myMap = mapMaybe (`lookupPair` myMap) . adjacent $ myPos
 
 -- Searches a path by Shortest Path Faster Algorithm (SPFA)
 -- https://en.wikipedia.org/wiki/Shortest_Path_Faster_Algorithm
@@ -218,3 +233,15 @@ findPath myStart isTarget canPassTo myMap = fmap fst . findRoute next isTarget $
         nextPositions = filter canPass myAdjacentPositions
 
         canPass (p, a) = canPassTo (myPos, myHeight) (p, a)
+
+minX :: Grid p a -> Int
+minX (Grid ((minX', _), _) _) = minX'
+
+maxX :: Grid p a -> Int
+maxX (Grid ((_, maxX'), _) _) = maxX'
+
+minY :: Grid p a -> Int
+minY (Grid (_, (minY', _)) _) = minY'
+
+maxY :: Grid p a -> Int
+maxY (Grid (_, (_, maxY')) _) = maxY'

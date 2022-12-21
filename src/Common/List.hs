@@ -11,12 +11,16 @@ module Common.List
     takeAscendingOn,
     append,
     minimumOn,
+    maximumOn,
+    minimumOr,
+    maximumOr,
+    minimumMaybe,
     zipWithIndex,
     range,
   )
 where
 
-import Data.List (groupBy, minimumBy)
+import Data.List (groupBy, maximumBy, minimumBy)
 import qualified Data.Map as Map (empty, insert, member)
 import qualified Data.Set as Set (empty, insert, member)
 
@@ -96,6 +100,21 @@ append x xs = xs ++ [x]
 
 minimumOn :: (Ord b) => (a -> b) -> [a] -> a
 minimumOn fn = minimumBy (\a b -> compare (fn a) (fn b))
+
+maximumOn :: (Ord b) => (a -> b) -> [a] -> a
+maximumOn fn = maximumBy (\a b -> compare (fn a) (fn b))
+
+minimumOr :: (Ord a) => a -> [a] -> a
+minimumOr x [] = x
+minimumOr _ xs = minimum xs
+
+maximumOr :: (Ord a) => a -> [a] -> a
+maximumOr x [] = x
+maximumOr _ xs = maximum xs
+
+minimumMaybe :: (Ord a) => [a] -> Maybe a
+minimumMaybe [] = Nothing
+minimumMaybe xs = Just $ minimum xs
 
 zipWithIndex :: [a] -> [(Int, a)]
 zipWithIndex = zip [0 ..]
