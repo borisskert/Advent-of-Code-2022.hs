@@ -13,4 +13,4 @@ sandUnitsUntilRest :: String -> Int
 sandUnitsUntilRest = length . Simulation.sandUnits . dropAll . from . withGround . (`insertScans` empty) . read
 
 showReservoir :: String -> String
-showReservoir = show .  dropAll . from . (`insertScans` empty) . read
+showReservoir = show .  dropAll . from . withGround . (`insertScans` empty) . read
