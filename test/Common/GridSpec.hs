@@ -248,4 +248,4 @@ spec = do
 
     it "Should find positions in larger Grid with duplicates" $ do
       lookupPositions 'A' (insert (3, 2) 'A' . insert (-3, 367) 'A' . insert (43, 543) 'A' $ largerGrid)
-        `shouldBe` [(4, 4), (43, 543), (-3, 367), (3, 2)]
+        `shouldBe` [(-3, 367), (3, 2), (4, 4), (43, 543)]
