@@ -1,7 +1,7 @@
-module Day14.Reservoir (Reservoir, toList, insertScans, empty, rock, sandSource) where
+module Day14.Reservoir (Reservoir, toList, insertScans, empty, rock, sandSource, sandUnits) where
 
 import Common.Grid (Grid)
-import qualified Common.Grid as Grid (empty, fromTuple, insert, toList)
+import qualified Common.Grid as Grid (empty, fromTuple, insert, lookupPositions, toList)
 import Common.OctaGridPosition (Position)
 import Day14.Material
 import Day14.RockScan (RockScan, deflate)
@@ -30,6 +30,9 @@ insertScanAt position = Reservoir . Grid.insert position rock . toGrid
 
 toList :: Reservoir -> [(Position, Material)]
 toList = Grid.toList . toGrid
+
+sandUnits :: Reservoir -> [Position]
+sandUnits = Grid.lookupPositions sand . toGrid
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | Instance Show

@@ -1,4 +1,4 @@
-module Day14.Material (Material, rock, sandSource) where
+module Day14.Material (Material, rock, sand, sandSource) where
 
 import Common.Grid (Value, fromValue, toValue)
 
@@ -19,3 +19,6 @@ rock = Rock
 
 sandSource :: Material
 sandSource = SandSource
+
+sand :: Material
+sand = Sand

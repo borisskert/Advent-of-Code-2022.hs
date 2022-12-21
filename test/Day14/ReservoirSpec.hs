@@ -2,7 +2,7 @@ module Day14.ReservoirSpec (spec) where
 
 import Common.Grid (fromTuple)
 import Day14.Material
-import Day14.Reservoir (empty, insertScans, toList)
+import Day14.Reservoir (empty, insertScans, sandUnits, toList)
 import Test.Hspec
 
 exampleInput :: String
@@ -11,8 +11,10 @@ exampleInput = "498,4 -> 498,6 -> 496,6\n503,4 -> 502,4 -> 502,9 -> 494,9\n"
 spec :: Spec
 spec = do
   describe "When inserting RockScans" $ do
+    let reservoir = insertScans (read exampleInput) empty
+
     it "Should insert example" $ do
-      (toList . insertScans (read exampleInput) $ empty)
+      toList reservoir
         `shouldBe` [ (fromTuple (494, 9), rock),
                      (fromTuple (495, 9), rock),
                      (fromTuple (496, 6), rock),
@@ -35,3 +37,6 @@ spec = do
                      (fromTuple (502, 9), rock),
                      (fromTuple (503, 4), rock)
                    ]
+
+    it "Should have no sand units" $ do
+      sandUnits reservoir `shouldBe` []
