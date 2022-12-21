@@ -38,7 +38,7 @@ spec = do
           length sandUnitsTwo `shouldBe` 2
 
         it "Should drop oneUnit" $ do
-          sandUnitsTwo `shouldBe` [fromTuple (500, 8), fromTuple (499, 8)]
+          sandUnitsTwo `shouldBe` [fromTuple (499, 8), fromTuple (500, 8)]
 
         describe "When simulating sand unit's drop #3" $ do
           let three = oneDrop two
@@ -48,7 +48,7 @@ spec = do
             length sandUnitsThree `shouldBe` 3
 
           it "Should drop oneUnit" $ do
-            sandUnitsThree `shouldBe` [fromTuple (500, 8), fromTuple (499, 8), fromTuple (501, 8)]
+            sandUnitsThree `shouldBe` [fromTuple (499, 8), fromTuple (500, 8), fromTuple (501, 8)]
 
           describe "When simulating sand unit's drop #5" $ do
             let five = oneDrop . oneDrop $ three
@@ -58,7 +58,7 @@ spec = do
               length sandUnitsFive `shouldBe` 5
 
             it "Should drop oneUnit" $ do
-              sandUnitsFive `shouldBe` [fromTuple (500, 8), fromTuple (499, 8), fromTuple (501, 8), fromTuple (500, 7), fromTuple (498, 8)]
+              sandUnitsFive `shouldBe` [fromTuple (498, 8), fromTuple (499, 8), fromTuple (500, 7), fromTuple (500, 8), fromTuple (501, 8)]
 
             describe "When simulating sand unit's drop #22" $ do
               let ten = oneDrop . oneDrop . oneDrop . oneDrop . oneDrop $ five
@@ -71,28 +71,28 @@ spec = do
 
               it "Should drop oneUnit" $ do
                 sandUnits22
-                  `shouldBe` [ fromTuple (500, 8),
-                               fromTuple (499, 8),
-                               fromTuple (501, 8),
-                               fromTuple (500, 7),
-                               fromTuple (498, 8),
-                               fromTuple (499, 7),
-                               fromTuple (501, 7),
-                               fromTuple (500, 6),
-                               fromTuple (497, 8),
+                  `shouldBe` [ fromTuple (497, 8),
                                fromTuple (498, 7),
-                               fromTuple (499, 6),
-                               fromTuple (501, 6),
-                               fromTuple (500, 5),
-                               fromTuple (499, 5),
-                               fromTuple (501, 5),
-                               fromTuple (500, 4),
-                               fromTuple (499, 4),
-                               fromTuple (501, 4),
-                               fromTuple (500, 3),
+                               fromTuple (498, 8),
                                fromTuple (499, 3),
+                               fromTuple (499, 4),
+                               fromTuple (499, 5),
+                               fromTuple (499, 6),
+                               fromTuple (499, 7),
+                               fromTuple (499, 8),
+                               fromTuple (500, 2),
+                               fromTuple (500, 3),
+                               fromTuple (500, 4),
+                               fromTuple (500, 5),
+                               fromTuple (500, 6),
+                               fromTuple (500, 7),
+                               fromTuple (500, 8),
                                fromTuple (501, 3),
-                               fromTuple (500, 2)
+                               fromTuple (501, 4),
+                               fromTuple (501, 5),
+                               fromTuple (501, 6),
+                               fromTuple (501, 7),
+                               fromTuple (501, 8)
                              ]
               it "Should show simulation state" $ do
                 show drop22
@@ -107,30 +107,30 @@ spec = do
 
                 it "Should drop oneUnit" $ do
                   sandUnits24
-                    `shouldBe` [ fromTuple (500, 8),
-                                 fromTuple (499, 8),
-                                 fromTuple (501, 8),
-                                 fromTuple (500, 7),
-                                 fromTuple (498, 8),
-                                 fromTuple (499, 7),
-                                 fromTuple (501, 7),
-                                 fromTuple (500, 6),
+                    `shouldBe` [ fromTuple (495, 8),
+                                 fromTuple (497, 5),
                                  fromTuple (497, 8),
                                  fromTuple (498, 7),
-                                 fromTuple (499, 6),
-                                 fromTuple (501, 6),
-                                 fromTuple (500, 5),
-                                 fromTuple (499, 5),
-                                 fromTuple (501, 5),
-                                 fromTuple (500, 4),
-                                 fromTuple (499, 4),
-                                 fromTuple (501, 4),
-                                 fromTuple (500, 3),
+                                 fromTuple (498, 8),
                                  fromTuple (499, 3),
-                                 fromTuple (501, 3),
+                                 fromTuple (499, 4),
+                                 fromTuple (499, 5),
+                                 fromTuple (499, 6),
+                                 fromTuple (499, 7),
+                                 fromTuple (499, 8),
                                  fromTuple (500, 2),
-                                 fromTuple (497, 5),
-                                 fromTuple (495, 8)
+                                 fromTuple (500, 3),
+                                 fromTuple (500, 4),
+                                 fromTuple (500, 5),
+                                 fromTuple (500, 6),
+                                 fromTuple (500, 7),
+                                 fromTuple (500, 8),
+                                 fromTuple (501, 3),
+                                 fromTuple (501, 4),
+                                 fromTuple (501, 5),
+                                 fromTuple (501, 6),
+                                 fromTuple (501, 7),
+                                 fromTuple (501, 8)
                                ]
 
                 it "Should show simulation state" $ do
