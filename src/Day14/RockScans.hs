@@ -1,4 +1,4 @@
-module Day14.RockScans (RockScans, fromList) where
+module Day14.RockScans (RockScans, fromList, toList) where
 
 import Common.Read (readBy)
 import Control.Monad (void)
@@ -19,6 +19,12 @@ newtype RockScans = RockScans [RockScan] deriving (Show, Eq)
 fromList :: [RockScan] -> RockScans
 fromList = RockScans
 
+toList :: RockScans -> [RockScan]
+toList (RockScans scans) = scans
+
+-- | -------------------------------------------------------------------------------------------------------------------
+-- | Read instance
+-- | -------------------------------------------------------------------------------------------------------------------
 instance Read RockScans where
   readsPrec _ = readBy parse
 

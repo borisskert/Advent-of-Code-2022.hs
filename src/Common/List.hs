@@ -12,6 +12,7 @@ module Common.List
     append,
     minimumOn,
     zipWithIndex,
+    range,
   )
 where
 
@@ -98,3 +99,9 @@ minimumOn fn = minimumBy (\a b -> compare (fn a) (fn b))
 
 zipWithIndex :: [a] -> [(Int, a)]
 zipWithIndex = zip [0 ..]
+
+range :: Int -> Int -> [Int]
+range from to
+  | from == to = [from]
+  | from < to = [from .. to]
+  | otherwise = [from, from - 1 .. to]
