@@ -1,7 +1,8 @@
 module Day14.SimulationSpec (spec) where
 
+import Common.Fold
 import Common.Grid (fromTuple)
-import Day14.Reservoir (empty, insertScans)
+import Day14.Reservoir (empty, insertScans, withGround)
 import Day14.Simulation
 import Test.Hspec
 
@@ -142,3 +143,10 @@ spec = do
 
       it "Should drop 24 sand units" $ do
         length sandUnitsAll `shouldBe` 24
+
+  describe "When drop allunits in a reservoir with ground" $ do
+    let simulation = from . withGround . (`insertScans` empty) . read $ exampleInput
+    let droppedAll = times oneDrop simulation 93
+
+    it "Should show" $ do
+      show droppedAll `shouldBe` "...........o...........\n..........ooo..........\n.........ooooo.........\n........ooooooo........\n.......oo#ooo##o.......\n......ooo#ooo#ooo......\n.....oo###ooo#oooo.....\n....oooo.oooo#ooooo....\n...oooooooooo#oooooo...\n..ooo#########ooooooo..\n.ooooo.......ooooooooo.\n#######################"

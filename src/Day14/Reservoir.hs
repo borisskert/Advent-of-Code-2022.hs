@@ -11,11 +11,23 @@ module Day14.Reservoir
     toGrid,
     insertSandAt,
     withGround,
+    isFull,
   )
 where
 
 import Common.Grid (Grid)
-import qualified Common.Grid as Grid (columnAt, empty, fromTuple, height, insert, lookupPositions, toList, toTuple, x)
+import qualified Common.Grid as Grid
+  ( columnAt,
+    empty,
+    fromTuple,
+    height,
+    insert,
+    lookup,
+    lookupPositions,
+    toList,
+    toTuple,
+    x,
+  )
 import Common.List
 import Common.OctaGridPosition (Position)
 import Day14.Material
@@ -78,6 +90,11 @@ withGround reservoir = foldl (flip insertRockAt) reservoir ground
     startX = subtract (height + 0) . Grid.x $ source
     endX = (+ (height + 0)) . Grid.x $ source
     ground = map Grid.fromTuple $ [(x, height) | x <- [startX .. endX]] :: [Position]
+
+isFull :: Reservoir -> Bool
+isFull reservoir = (Just sand ==) . Grid.lookup source . toGrid $ reservoir
+  where
+    source = findSandSource reservoir
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | Instance Show
