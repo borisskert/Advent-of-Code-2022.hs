@@ -6,6 +6,8 @@ import qualified Data.Set as Set (empty, insert, toList, unions)
 import Day15.ScannerArea
 import Day15.SensorAndBeaconReport (BeaconAndSensorReport)
 import qualified Day15.SensorAndBeaconReport as BeaconAndSensorReport (beacon, sensor)
+import Day15.SignalRow (SignalRow)
+import qualified Day15.SignalRow as SignalRow (from, size)
 
 newtype Detector = Detector (Set ScannerArea) deriving (Eq, Show)
 
@@ -26,5 +28,5 @@ importReport (Detector mySet) report =
     sensorPos = BeaconAndSensorReport.sensor report
     scannerArea = from sensorPos beaconPos
 
-rowAt :: Int -> Detector -> Set Position
-rowAt y = Set.unions . map (intersectionRow y) . filter (intersectsRow y) . toList
+rowAt :: Int -> Detector -> SignalRow
+rowAt y = SignalRow.from . Set.unions . map (intersectionRow y) . filter (intersectsRow y) . toList
