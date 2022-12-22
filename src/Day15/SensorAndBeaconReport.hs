@@ -1,4 +1,4 @@
-module Day15.SensorAndBeacon (BeaconAndSensorReport, from, readMany) where
+module Day15.SensorAndBeaconReport (BeaconAndSensorReport, from, readMany, beacon, sensor) where
 
 import Common.OctaGridPosition (Position)
 import qualified Common.OctaGridPosition as Position (from)
@@ -13,7 +13,6 @@ import qualified Text.ParserCombinators.Parsec as Parsec
     many1,
     option,
     parse,
-    sepBy1,
     string,
   )
 
@@ -25,12 +24,17 @@ from = BeaconAndSensorReport
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | Read instance
 -- | -------------------------------------------------------------------------------------------------------------------
-
 instance Read BeaconAndSensorReport where
   readsPrec _ = readBy parse
 
 readMany :: String -> [BeaconAndSensorReport]
 readMany = map read . lines
+
+beacon :: BeaconAndSensorReport -> Position
+beacon (BeaconAndSensorReport _ b) = b
+
+sensor :: BeaconAndSensorReport -> Position
+sensor (BeaconAndSensorReport s _) = s
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | BeaconAndSensor Parser
