@@ -1,4 +1,4 @@
-module Day15.SensorAndBeacon (BeaconAndSensor, from, readMany) where
+module Day15.SensorAndBeacon (BeaconAndSensorReport, from, readMany) where
 
 import Common.OctaGridPosition (Position)
 import qualified Common.OctaGridPosition as Position (from)
@@ -17,28 +17,28 @@ import qualified Text.ParserCombinators.Parsec as Parsec
     string,
   )
 
-data BeaconAndSensor = BeaconAndSensor Position Position deriving (Eq, Show)
+data BeaconAndSensorReport = BeaconAndSensorReport Position Position deriving (Eq, Show)
 
-from :: Position -> Position -> BeaconAndSensor
-from = BeaconAndSensor
+from :: Position -> Position -> BeaconAndSensorReport
+from = BeaconAndSensorReport
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | Read instance
 -- | -------------------------------------------------------------------------------------------------------------------
 
-instance Read BeaconAndSensor where
+instance Read BeaconAndSensorReport where
   readsPrec _ = readBy parse
 
-readMany :: String -> [BeaconAndSensor]
+readMany :: String -> [BeaconAndSensorReport]
 readMany = map read . lines
 
 -- | -------------------------------------------------------------------------------------------------------------------
 -- | BeaconAndSensor Parser
 -- | -------------------------------------------------------------------------------------------------------------------
-parse :: String -> Either ParseError BeaconAndSensor
+parse :: String -> Either ParseError BeaconAndSensorReport
 parse = Parsec.parse parseBeaconAndSensor "(ParseError while parsing BeaconAndSensor)"
 
-parseBeaconAndSensor :: GenParser Char st BeaconAndSensor
+parseBeaconAndSensor :: GenParser Char st BeaconAndSensorReport
 parseBeaconAndSensor = do
   _ <- Parsec.string "Sensor at x="
   x <- signedInt
@@ -47,7 +47,7 @@ parseBeaconAndSensor = do
   _ <- Parsec.string ": closest beacon is at x="
   x' <- signedInt
   _ <- Parsec.string ", y="
-  BeaconAndSensor (Position.from x y) . Position.from x' <$> signedInt
+  BeaconAndSensorReport (Position.from x y) . Position.from x' <$> signedInt
 
 signedInt :: GenParser Char st Int
 signedInt = do

@@ -2,7 +2,7 @@ module Day15.SensorAndBeaconSpec (spec) where
 
 import qualified Common.Grid as Grid
 import qualified Common.OctaGridPosition as Position
-import Day15.SensorAndBeacon
+import Day15.SensorAndBeaconReport
 import Test.Hspec
 
 exampleInput :: String
