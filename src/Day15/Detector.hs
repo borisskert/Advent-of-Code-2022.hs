@@ -1,6 +1,5 @@
 module Day15.Detector (Detector, fromReports, rowAt) where
 
-import Common.List
 import Common.OctaGridPosition (Position)
 import Data.Set (Set)
 import qualified Data.Set as Set (empty, insert, toList, unions)

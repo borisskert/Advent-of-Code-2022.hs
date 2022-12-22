@@ -1,6 +1,5 @@
 module Day15.SensorAndBeaconReportSpec (spec) where
 
-import qualified Common.Grid as Grid
 import qualified Common.OctaGridPosition as Position
 import Day15.SensorAndBeaconReport
 import Test.Hspec
