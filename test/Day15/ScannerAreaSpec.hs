@@ -11,7 +11,7 @@ spec = do
 
     it "should determine if ScannerArea is intersecting with row -3, which is False" $ do
       intersectsRow (-3) area `shouldBe` False
-      
+
     it "should determine if ScannerArea is intersecting with row -2, which is true" $ do
       intersectsRow (-2) area `shouldBe` True
 
@@ -26,14 +26,13 @@ spec = do
 
     it "should determine if ScannerArea is intersecting with row 16, which is false" $ do
       intersectsRow 16 area `shouldBe` True
-      
+
     it "should determine if ScannerArea is intersecting with row 17, which is false" $ do
       intersectsRow 17 area `shouldBe` False
 
     it "Should extract intersecting positions with row" $ do
       intersectionRow 10 area
-        `shouldBe` [ Position.from 2 10,
-                     Position.from 3 10,
+        `shouldBe` [ Position.from 3 10,
                      Position.from 4 10,
                      Position.from 5 10,
                      Position.from 6 10,

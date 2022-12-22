@@ -18,7 +18,7 @@ intersectsRow row ScannerArea {scanner = myScanner, beacon = myBeacon} = minY <=
     maxY = scannerY + size
 
 intersectionRow :: Int -> ScannerArea -> [Position]
-intersectionRow row ScannerArea {scanner = myScanner, beacon = myBeacon} = [Position.from column row | column <- [startX .. endX]]
+intersectionRow row ScannerArea {scanner = myScanner, beacon = myBeacon} = filter (/= myBeacon) [Position.from column row | column <- [startX .. endX]]
   where
     size = manhattanDistance myScanner myBeacon
     distance = abs $ y myScanner - row
