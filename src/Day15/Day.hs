@@ -1,4 +1,4 @@
-module Day15.Day (day15part1) where
+module Day15.Day (day15part1, day15part2) where
 
 -- https://adventofcode.com/2022/day/15
 
@@ -15,5 +15,17 @@ day15part1 =
       run = do
         input <- readFileContents "puzzleinput/day15.txt"
         let result = howManyPositions 2000000 input
+        print result
+    }
+
+day15part2 :: Day
+day15part2 =
+  Day
+    { name = "day15part2",
+      friendlyName = "Day 15 Part 2",
+      isDefault = True,
+      run = do
+        input <- readFileContents "puzzleinput/day15.txt"
+        let result = tuningFrequency 2000000 input
         print result
     }
