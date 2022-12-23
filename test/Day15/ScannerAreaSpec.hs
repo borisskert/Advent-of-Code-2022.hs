@@ -3,6 +3,7 @@ module Day15.ScannerAreaSpec (spec) where
 import qualified Common.OctaGridPosition as Position (from)
 import qualified Data.Set as Set (fromList)
 import Day15.ScannerArea
+import qualified Day15.SignalRow as SignalRow (from)
 import Test.Hspec
 
 spec :: Spec
@@ -33,17 +34,4 @@ spec = do
 
     it "Should extract intersecting positions with row" $ do
       intersectionRow 10 area
-        `shouldBe` Set.fromList
-          [ Position.from 3 10,
-            Position.from 4 10,
-            Position.from 5 10,
-            Position.from 6 10,
-            Position.from 7 10,
-            Position.from 8 10,
-            Position.from 9 10,
-            Position.from 10 10,
-            Position.from 11 10,
-            Position.from 12 10,
-            Position.from 13 10,
-            Position.from 14 10
-          ]
+        `shouldBe` SignalRow.from 3 14 10

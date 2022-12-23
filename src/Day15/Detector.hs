@@ -9,7 +9,8 @@ import Day15.ScannerArea
 import Day15.SensorAndBeaconReport (BeaconAndSensorReport)
 import qualified Day15.SensorAndBeaconReport as BeaconAndSensorReport (beacon, sensor)
 import Day15.SignalRow (SignalRow)
-import qualified Day15.SignalRow as SignalRow (from, hole, size)
+import qualified Day15.SignalRow as SignalRow (from, hole, size, union)
+import Debug.Trace (traceShow)
 
 newtype Detector = Detector (Set ScannerArea) deriving (Eq, Show)
 
@@ -31,7 +32,10 @@ importReport (Detector mySet) report =
     scannerArea = from sensorPos beaconPos
 
 rowAt :: Int -> Detector -> SignalRow
-rowAt y = SignalRow.from . Set.unions . map (intersectionRow y) . filter (intersectsRow y) . toList
+rowAt y = foldl1 SignalRow.union . map (intersectionRow y) . filter (intersectsRow y) . toList
+
+fullRowAt :: Int -> Detector -> SignalRow
+fullRowAt y = foldl1 SignalRow.union . map (fullIntersectionRow y) . filter (intersectsRow y) . toList
 
 distressSignal :: Int -> Detector -> Position
-distressSignal row detector = head . mapMaybe (SignalRow.hole . (`rowAt` detector)) . tail . zigzag $ row
+distressSignal row detector = head . mapMaybe (SignalRow.hole . (`fullRowAt` detector)) . tail . zigzag $ row
