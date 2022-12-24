@@ -32,10 +32,10 @@ importReport (Detector mySet) report =
     scannerArea = from sensorPos beaconPos
 
 rowAt :: Int -> Detector -> SignalRow
-rowAt y = foldl1 SignalRow.union . map (intersectionRow y) . filter (intersectsRow y) . toList
+rowAt y = foldl1 SignalRow.union . map (intersectionRow y) .filter (isIntersectsRow y) . toList
 
 fullRowAt :: Int -> Detector -> SignalRow
-fullRowAt y = foldl1 SignalRow.union . map (fullIntersectionRow y) . filter (intersectsRow y) . toList
+fullRowAt y = foldl1 SignalRow.union . map (fullIntersectionRow y) . filter (isIntersectsRow y) . toList
 
 distressSignal :: Int -> Detector -> Position
-distressSignal row detector = head . mapMaybe (SignalRow.hole . (`fullRowAt` detector)) . tail . zigzag $ row
+distressSignal row detector = head . mapMaybe (SignalRow.hole . (`fullRowAt` detector)). zigzag $ row

@@ -203,6 +203,18 @@ spec = do
       it "Should provide size" $ do
         size range' `shouldBe` 7
 
+      describe "When union with exclusion" $ do
+        let range'' = from 8 10 `union` range'
+
+        it "Should provide start" $ do
+          start range'' `shouldBe` 1
+
+        it "Should provide end" $ do
+          end range'' `shouldBe` 10
+
+        it "Should provide size" $ do
+          size range'' `shouldBe` 10
+
     describe "When exclude a smaller range which is within" $ do
       let range' = fromJust . excludeFrom (from 2 3) $ range
 
@@ -214,6 +226,18 @@ spec = do
 
       it "Should provide size" $ do
         size range' `shouldBe` 8
+
+      describe "When union with exclusion" $ do
+        let range'' = from 2 3 `union` range'
+
+        it "Should provide start" $ do
+          start range'' `shouldBe` 1
+
+        it "Should provide end" $ do
+          end range'' `shouldBe` 10
+
+        it "Should provide size" $ do
+          size range'' `shouldBe` 10
 
       describe "When exclude a smaller range which is within and overlaps" $ do
         let range'' = fromJust .excludeFrom (from 3 4) $ range'
@@ -367,3 +391,48 @@ spec = do
 
     it "[0-1] `union` [3-4] => [0-4] w/o [2-2]" $ do
       from (0 :: Int) 1 `union` from 3 4 `shouldBe` fromJust (from 2 2 `excludeFrom` from 0 4)
+
+    it "[3-4] `union` [0-1] => [0-4] w/o [2-2]" $ do
+      from (3 :: Int) 4 `union` from 0 1 `shouldBe` fromJust (from 2 2 `excludeFrom` from 0 4)
+
+    it "[11-13] `union` [15-17] => [11-17] w/o [14-14]" $ do
+      from (11 :: Int) 13 `union` from 15 17 `shouldBe` fromJust (from 14 14 `excludeFrom` from 11 17)
+
+    it "[11-13] `union` [15-17] `union` [15-25] => [11-25] w/o [14-14]" $ do
+      from (11 :: Int) 13 `union` from 15 17 `union` from 15 25 `shouldBe` fromJust (from 14 14 `excludeFrom` from 11 25)
+
+    it "[3-13] `union` [11-13] `union` [15-17] => [11-17] w/o [14-14]" $ do
+      from (3 :: Int) 13 `union` from 11 13 `union` from 15 17 `shouldBe` fromJust (from 14 14 `excludeFrom` from 3 17)
+
+    it "[2-2] `union` [3-13] `union` [11-13] `union` [15-17] => [11-17] w/o [14-14]" $ do
+      from (2 :: Int) 2 `union` from (3 :: Int) 13 `union` from 11 13 `union` from 15 17 `shouldBe` fromJust (from 14 14 `excludeFrom` from 2 17)
+
+    it "[2-2] `union` [3-13] `union` [11-13] `union` [15-17] `union` [15-25] => [11-17] w/o [14-14]" $ do
+      from (2 :: Int) 2 `union` from (3 :: Int) 13 `union` from 11 13 `union` from 15 17 `union` from 15 25 `shouldBe` fromJust (from 14 14 `excludeFrom` from 2 25)
+
+    it "[(-3)-3] `union` [2-2] `union` [3-13] `union` [11-13] `union` [15-17] `union` [15-25] => [(-3)-25] w/o [14-14]" $ do
+      let range = from (-3) (3 :: Int) `union` from 2 2 `union` from 3 13 `union` from 11 13 `union` from 15 17 `union` from 15 25
+      range `shouldBe` fromJust (from 14 14 `excludeFrom` from (-3) 25)
+
+    it "[1-6] w/o [3-4] `union` [1-6] w/o [3-3] => [1-6] w/o [3-3]" $ do
+      let range = fromJust (from 3 4 `excludeFrom` from 1 6) `union` fromJust (from 3 3 `excludeFrom` from 1 6)
+      range `shouldBe` fromJust (from (3 :: Int) 4 `excludeFrom` from 1 6)
+
+    it "[1-6] w/o [3-4] `excludeFrom` [1-6] w/o [4-5] => []" $ do
+      let range = fromJust (from 3 4 `excludeFrom` from 1 6) `excludeFrom` fromJust (from 4 5 `excludeFrom` from 1 6)
+      range `shouldBe` Just (from (3 :: Int) 3)
+
+    it "[3-4] `intersect [4-5] => [4-4]" $ do
+      let range = from (3 :: Int) 4 `intersect` from 4 5
+      range `shouldBe` Just (from 4 4)
+
+    it "[4-5] `excludeFrom [3-4]" $ do
+      let range = fromJust (from 4 5 `excludeFrom` from 3 4)
+      range `shouldBe` from (3 :: Int) 3
+
+    it "[1-8] w/o ([2-7] w/o [4-5)) `excludeFrom [1-8] => [4-5]" $ do
+      let r18 = from 1 8
+          r27wo45 = fromJust (from 4 5 `excludeFrom` from 2 7)
+          r18woR27wo45 = fromJust (r27wo45 `excludeFrom` r18)
+          range = r18woR27wo45 `excludeFrom` r18
+      range `shouldBe` (from 4 5 `excludeFrom` from (2 :: Int) 7)

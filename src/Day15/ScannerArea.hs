@@ -1,4 +1,4 @@
-module Day15.ScannerArea (ScannerArea, from, intersectionRow, intersectsRow, fullIntersectionRow) where
+module Day15.ScannerArea (ScannerArea, from, intersectionRow, isIntersectsRow, fullIntersectionRow) where
 
 import Common.Grid (x, y)
 import Common.OctaGridPosition (Position, manhattanDistance)
@@ -13,8 +13,8 @@ data ScannerArea = ScannerArea {scanner :: Position, beacon :: Position} derivin
 from :: Position -> Position -> ScannerArea
 from = ScannerArea
 
-intersectsRow :: Int -> ScannerArea -> Bool
-intersectsRow row ScannerArea {scanner = myScanner, beacon = myBeacon} = minY <= row && row <= maxY
+isIntersectsRow :: Int -> ScannerArea -> Bool
+isIntersectsRow row ScannerArea {scanner = myScanner, beacon = myBeacon} = minY <= row && row <= maxY
   where
     scannerY = y myScanner
     size = manhattanDistance myScanner myBeacon

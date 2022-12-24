@@ -7,50 +7,26 @@ import Common.OctaGridPosition (Position)
 import qualified Common.OctaGridPosition as Position (from)
 import Data.Set (Set)
 import qualified Data.Set as Set (empty, fromList, insert, toList, union)
-import Debug.Trace
+import Common.Range (Range)
+import qualified Common.Range as Range (from, size, union, gap, start)
 
-data SignalRow = SignalRow {minX :: Int, maxX :: Int, rowY :: Int, beacons :: Set Int, gap :: Maybe Int} deriving (Eq, Show)
+data SignalRow = SignalRow {range:: Range Int, rowY :: Int, beacons :: Set Int} deriving (Eq, Show)
 
 from :: Int -> Int -> Int -> SignalRow
-from minimumX maximumX row = SignalRow minimumX maximumX row Set.empty Nothing
+from minimumX maximumX row = SignalRow (Range.from minimumX maximumX) row Set.empty
 
 withBeacon :: Int -> SignalRow -> SignalRow
-withBeacon beaconX SignalRow {minX = myMinX, maxX = myMaxX, rowY = myRowY, beacons = myBeacons, gap = myGap} =
-  SignalRow myMinX myMaxX myRowY (Set.insert beaconX myBeacons) myGap
+withBeacon beaconX SignalRow {range = myRange, rowY = myRowY, beacons = myBeacons} =
+  SignalRow myRange myRowY (Set.insert beaconX myBeacons)
 
 size :: SignalRow -> Int
-size row = maxX row - minX row + 1 - (length . beacons $ row)
+size (SignalRow range _ beacons) = Range.size range - (length beacons)
 
 union :: SignalRow -> SignalRow -> SignalRow
-union (SignalRow minA maxA rowA beaconsA _) (SignalRow minB maxB _ beaconsB _) = traceShow(minA, maxA, minB, maxB) . SignalRow (min minA minB) (max maxA maxB) rowA (Set.union beaconsA beaconsB) $ myGap
-  where
-    maxBeaconsA = maximum . Set.toList $ beaconsA
-    maxA'
-      | not . null $ beaconsA = max maxA maxBeaconsA
-      | otherwise = maxA
-    
-    minBeaconsA = minimum . Set.toList $ beaconsA
-    minA'
-      | not . null $ beaconsA = min minA minBeaconsA
-      | otherwise = minA
-    
-    maxBeaconsB = maximum . Set.toList $ beaconsB
-    maxB'
-      | not . null $ beaconsB = max maxB maxBeaconsB
-      | otherwise = maxB
-    
-    minBeaconsB = minimum . Set.toList $ beaconsB
-    minB'
-      | not . null $ beaconsB = min minB minBeaconsB
-      | otherwise = minB
-    
-    myGap
-      | minA' > maxB' + 1 = Just (minA' - 1)
-      | maxA' < minB' - 1 = Just (maxA' + 1)
-      | otherwise = Nothing
+union (SignalRow rangeA rowA beaconsA) (SignalRow rangeB _ beaconsB ) = SignalRow (rangeA `Range.union` rangeB) rowA (Set.union beaconsA beaconsB)
 
 hole :: SignalRow -> Maybe Position
-hole row = fmap (`Position.from` rowY row) . gap. traceShow(row) $ row
+hole (SignalRow myRange row _) = fmap ((`Position.from` row). Range.start) . Range.gap $ myRange
 
 --hole :: SignalRow -> Maybe Position
 --hole (SignalRow mySet)

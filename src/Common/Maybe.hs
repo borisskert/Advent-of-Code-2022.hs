@@ -1,4 +1,4 @@
-module Common.Maybe (maybeDo, replace, maybeReplace, maybeNothing, maybeSkip) where
+module Common.Maybe (maybeDo, replace, maybeReplace, maybeNothing, maybeSkip, foldMaybe, foldMaybeM) where
 
 import Data.Maybe (fromMaybe)
 
@@ -20,3 +20,15 @@ maybeNothing fn (Just y) x = fn y x
 maybeSkip :: (a -> a -> Maybe a) -> Maybe a -> a -> Maybe a
 maybeSkip _ Nothing x = Just x
 maybeSkip fn (Just y) x = fn y x
+
+foldMaybe :: (a -> a -> a) -> Maybe a -> Maybe a -> Maybe a
+foldMaybe _ Nothing Nothing = Nothing
+foldMaybe _ Nothing (Just x) = Just x
+foldMaybe _ (Just x) Nothing = Just x
+foldMaybe fn (Just x) (Just y) = Just (fn x y)
+
+foldMaybeM :: (a -> a -> Maybe a) -> Maybe a -> Maybe a -> Maybe a
+foldMaybeM _ Nothing Nothing = Nothing
+foldMaybeM _ Nothing (Just x) = Just x
+foldMaybeM _ (Just x) Nothing = Just x
+foldMaybeM fn (Just x) (Just y) = fn x y
