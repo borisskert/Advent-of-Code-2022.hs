@@ -15,4 +15,4 @@ howManyPositions row = size . rowAt row . fromReports . readMany
 tuningFrequency :: Int -> String -> Integer
 tuningFrequency row input = (+ toInteger positionY) . (* 4_000_000) . toInteger $ positionX
   where
-    (positionX, positionY) =  toTuple . distressSignal row . fromReports . readMany $ input
+    (positionX, positionY) = toTuple . distressSignal row . fromReports . readMany $ input

@@ -4,7 +4,7 @@ import Data.Range
 
 lengthOf :: (Integral a) => Range a -> a
 lengthOf (SingletonRange _) = 1
-lengthOf (SpanRange start end) = boundValue end - (boundValue start + 1)
+lengthOf (SpanRange start end) = boundValue end - boundValue start + 1
 lengthOf (LowerBoundRange _) = error "lengthOf LowerBoundRange is infinite"
 lengthOf (UpperBoundRange _) = error "lengthOf UpperBoundRange is infinite"
 lengthOf InfiniteRange = error "lengthOf InfiniteRange is infinite"

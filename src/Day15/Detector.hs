@@ -12,6 +12,9 @@ import qualified Day15.SensorAndBeaconReport as BeaconAndSensorReport (beacon, s
 import Day15.SignalRow (SignalRow)
 import qualified Day15.SignalRow as SignalRow (hole, union)
 
+-- | -------------------------------------------------------------------------------------------------------------------
+-- | Detector to find ScannerAreas and SignalRows.
+-- | -------------------------------------------------------------------------------------------------------------------
 newtype Detector = Detector (Set ScannerArea) deriving (Eq, Show)
 
 empty :: Detector
