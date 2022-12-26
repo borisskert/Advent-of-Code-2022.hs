@@ -1,40 +1,39 @@
 module Day15.SignalRow (SignalRow, from, size, hole, union, withBeacon) where
 
-import Common.Grid (x, y)
-import Common.List (minimumMaximum)
-import Common.Math (gaussBetween)
 import Common.OctaGridPosition (Position)
 import qualified Common.OctaGridPosition as Position (from)
+import Common.Range (lengthOf, startOf)
+import qualified Common.Range as Range (gaps)
+import Data.Range (Range, (+=+))
+import qualified Data.Range as Range (joinRanges)
 import Data.Set (Set)
-import qualified Data.Set as Set (empty, fromList, insert, toList, union)
-import Common.Range (Range)
-import qualified Common.Range as Range (from, size, union, gap)
+import qualified Data.Set as Set (empty, insert, union)
 
-data SignalRow = SignalRow {range:: Range Int, rowY :: Int, beacons :: Set Int} deriving (Eq, Show)
+-- | -------------------------------------------------------------------------------------------------------------------
+-- | SignalRow is a row of the scanner area. It is a set of ranges.
+-- | -------------------------------------------------------------------------------------------------------------------
+data SignalRow = SignalRow {ranges :: [Range Int], rowY :: Int, beacons :: Set Int} deriving (Eq, Show)
 
 from :: Int -> Int -> Int -> SignalRow
-from minimumX maximumX row = SignalRow (Range.from minimumX maximumX) row Set.empty
+from start end row = SignalRow [start +=+ end] row Set.empty
 
 withBeacon :: Int -> SignalRow -> SignalRow
-withBeacon beaconX SignalRow {range = myRange, rowY = myRowY, beacons = myBeacons} =
+withBeacon beaconX SignalRow {ranges = myRange, rowY = myRowY, beacons = myBeacons} =
   SignalRow myRange myRowY (Set.insert beaconX myBeacons)
 
 size :: SignalRow -> Int
-size (SignalRow range _ beacons) = Range.size range - (length beacons)
+size (SignalRow myRanges _ myBeacons) = subtract (length myBeacons) . sum . map lengthOf $ myRanges
 
 union :: SignalRow -> SignalRow -> SignalRow
-union (SignalRow rangeA rowA beaconsA) (SignalRow rangeB _ beaconsB ) = SignalRow (rangeA `Range.union` rangeB) rowA (Set.union beaconsA beaconsB)
+union (SignalRow rangesA row beaconsA) (SignalRow rangesB _ beaconsB) =
+  SignalRow mergedRanges row (Set.union beaconsA beaconsB)
+  where
+    mergedRanges = Range.joinRanges (rangesA ++ rangesB)
 
 hole :: SignalRow -> Maybe Position
-hole (SignalRow myRange row _) = fmap (`Position.from` row) . Range.gap $ myRange
-
---hole :: SignalRow -> Maybe Position
---hole (SignalRow mySet)
---  | sumX == expectedSumX = Nothing
---  | otherwise = Just . Position.from beaconX $ beaconY
---  where
---    (minX, maxX) = minimumMaximum . map x . Set.toList $ mySet
---    sumX = sum . map x . Set.toList $ mySet :: Int
---    expectedSumX = gaussBetween minX maxX :: Int
---    beaconX = gaussBetween minX maxX - sumX
---    beaconY = head . map y . Set.toList $ mySet
+hole (SignalRow myRanges row _) = fmap (`Position.from` row) column
+  where
+    gaps = Range.gaps myRanges
+    column
+      | null gaps = Nothing
+      | otherwise = Just . (+ 1) . startOf . head $ gaps

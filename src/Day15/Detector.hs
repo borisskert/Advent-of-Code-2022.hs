@@ -2,15 +2,15 @@ module Day15.Detector (Detector, fromReports, rowAt, distressSignal) where
 
 import Common.List (zigzag)
 import Common.OctaGridPosition (Position)
-import Data.Maybe (catMaybes, mapMaybe)
+import Data.Maybe (mapMaybe)
 import Data.Set (Set)
-import qualified Data.Set as Set (empty, insert, toList, unions)
-import Day15.ScannerArea
+import qualified Data.Set as Set (empty, insert, toList)
+import Day15.ScannerArea (ScannerArea)
+import qualified Day15.ScannerArea as ScannerArea (from, rowAt)
 import Day15.SensorAndBeaconReport (BeaconAndSensorReport)
 import qualified Day15.SensorAndBeaconReport as BeaconAndSensorReport (beacon, sensor)
 import Day15.SignalRow (SignalRow)
-import qualified Day15.SignalRow as SignalRow (from, hole, size, union)
-import Debug.Trace (traceShow)
+import qualified Day15.SignalRow as SignalRow (hole, union)
 
 newtype Detector = Detector (Set ScannerArea) deriving (Eq, Show)
 
@@ -29,13 +29,10 @@ importReport (Detector mySet) report =
   where
     beaconPos = BeaconAndSensorReport.beacon report
     sensorPos = BeaconAndSensorReport.sensor report
-    scannerArea = from sensorPos beaconPos
+    scannerArea = ScannerArea.from sensorPos beaconPos
 
 rowAt :: Int -> Detector -> SignalRow
-rowAt y = foldl1 SignalRow.union . map (intersectionRow y) .filter (isIntersectsRow y) . toList
-
-fullRowAt :: Int -> Detector -> SignalRow
-fullRowAt y = foldl1 SignalRow.union . map (fullIntersectionRow y) . filter (isIntersectsRow y) . toList
+rowAt y = foldl1 SignalRow.union . mapMaybe (ScannerArea.rowAt y) . toList
 
 distressSignal :: Int -> Detector -> Position
-distressSignal row detector = head . mapMaybe (SignalRow.hole . (`fullRowAt` detector)). zigzag $ row
+distressSignal row detector = head . mapMaybe (SignalRow.hole . (`rowAt` detector)) . zigzag $ row

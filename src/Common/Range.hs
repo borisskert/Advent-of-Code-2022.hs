@@ -1,37 +1,27 @@
-module Common.Range (Range, gap, from, union, size) where
+module Common.Range (lengthOf, startOf, endOf, gaps) where
 
-import Common.Maybe
-import Data.Range ((+=+))
-import qualified Data.Range as R
+import Data.Range
 
-data Range a = Range [R.Range a] deriving (Eq, Show)
+lengthOf :: (Integral a) => Range a -> a
+lengthOf (SingletonRange _) = 1
+lengthOf (SpanRange start end) = boundValue end - (boundValue start + 1)
+lengthOf (LowerBoundRange _) = error "lengthOf LowerBoundRange is infinite"
+lengthOf (UpperBoundRange _) = error "lengthOf UpperBoundRange is infinite"
+lengthOf InfiniteRange = error "lengthOf InfiniteRange is infinite"
 
-from :: Ord a => a -> a -> Range a
-from a b
-  | a <= b = Range [a +=+ b]
-  | otherwise = Range [b +=+ a]
+startOf :: Range a -> a
+startOf (SingletonRange a) = a
+startOf (SpanRange start _) = boundValue start
+startOf (LowerBoundRange start) = boundValue start
+startOf (UpperBoundRange _) = error "startOf LowerBoundRange is infinite"
+startOf InfiniteRange = error "endOf InfiniteRange is infinite"
 
-union :: (Integral a, Show a) => Range a -> Range a -> Range a
-union (Range other) (Range myRange) = Range (R.union myRange other)
+endOf :: Range a -> a
+endOf (SingletonRange a) = a
+endOf (SpanRange _ end) = boundValue end
+endOf (LowerBoundRange _) = error "endOf LowerBoundRange is infinite"
+endOf (UpperBoundRange end) = boundValue end
+endOf InfiniteRange = error "endOf InfiniteRange is infinite"
 
-size :: (Integral a) => Range a -> a
-size (Range ranges) = sum . map lengthOf $ ranges
-
-lengthOf :: (Integral a) => R.Range a -> a
-lengthOf (R.SingletonRange _) = 1
-lengthOf (R.SpanRange start end) = (R.boundValue end) - (R.boundValue start + 1)
-lengthOf (R.LowerBoundRange _) = error "lengthOf LowerBoundRange is infinite"
-lengthOf (R.UpperBoundRange _) = error "lengthOf UpperBoundRange is infinite"
-lengthOf (R.InfiniteRange) = error "lengthOf InfiniteRange is infinite"
-
-gap :: (Integral a, Show a) => Range a -> Maybe a
-gap (Range ranges)
-  | length ranges == 1 = Nothing
-  | otherwise = Just . (+ 1) . endOf . head $ ranges
-
-endOf :: R.Range a -> a
-endOf (R.SingletonRange a) = a
-endOf (R.SpanRange _ end) = R.boundValue end
-endOf (R.LowerBoundRange _) = error "endOf LowerBoundRange is infinite"
-endOf (R.UpperBoundRange end) = R.boundValue end
-endOf (R.InfiniteRange) = error "endOf InfiniteRange is infinite"
+gaps :: (Ord a) => [Range a] -> [Range a]
+gaps = tail . init . invert
