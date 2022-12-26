@@ -8,7 +8,7 @@ import qualified Common.OctaGridPosition as Position (from)
 import Data.Set (Set)
 import qualified Data.Set as Set (empty, fromList, insert, toList, union)
 import Common.Range (Range)
-import qualified Common.Range as Range (from, size, union, gap, start)
+import qualified Common.Range as Range (from, size, union, gap)
 
 data SignalRow = SignalRow {range:: Range Int, rowY :: Int, beacons :: Set Int} deriving (Eq, Show)
 
@@ -26,7 +26,7 @@ union :: SignalRow -> SignalRow -> SignalRow
 union (SignalRow rangeA rowA beaconsA) (SignalRow rangeB _ beaconsB ) = SignalRow (rangeA `Range.union` rangeB) rowA (Set.union beaconsA beaconsB)
 
 hole :: SignalRow -> Maybe Position
-hole (SignalRow myRange row _) = fmap ((`Position.from` row). Range.start) . Range.gap $ myRange
+hole (SignalRow myRange row _) = fmap (`Position.from` row) . Range.gap $ myRange
 
 --hole :: SignalRow -> Maybe Position
 --hole (SignalRow mySet)

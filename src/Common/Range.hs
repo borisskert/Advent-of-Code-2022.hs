@@ -1,72 +1,37 @@
-module Common.Range (Range, start, end, gap, from, excludeFrom, union, intersect, size, isOverlappingWith) where
+module Common.Range (Range, gap, from, union, size) where
 
 import Common.Maybe
+import Data.Range ((+=+))
+import qualified Data.Range as R
 
-data Range a = Range {start :: a, end :: a, gap :: Maybe (Range a)} deriving (Eq, Ord, Show)
+data Range a = Range [R.Range a] deriving (Eq, Show)
 
 from :: Ord a => a -> a -> Range a
 from a b
-  | a <= b = Range a b Nothing
-  | otherwise = Range b a Nothing
-
-excludeFrom :: (Integral a, Show a) => Range a -> Range a -> Maybe (Range a)
-excludeFrom other@(Range otherStart otherEnd otherGaps) myRange@(Range myStart myEnd myGaps)
-  | other == myRange = Nothing
-  | myStart == otherStart && myEnd == otherEnd = foldMaybeM excludeFrom myGaps otherGaps
-  | other `isLeadingIn` myRange = Just . maybeReplace excludeFrom myGaps . maybeDo union otherGaps . from (otherEnd + 1) $ myEnd
-  | other `isTrailingIn` myRange = Just . maybeReplace excludeFrom myGaps . maybeDo union otherGaps . from myStart $ (otherStart - 1)
-  | other `isWithin` myRange = Just . withGap unionGap . maybeDo union otherGaps $ from myStart myEnd
-  | otherwise = Just . maybeReplace excludeFrom (other `intersect` myRange) $ myRange
-  where
-    unionGap = maybeDo union myGaps other
+  | a <= b = Range [a +=+ b]
+  | otherwise = Range [b +=+ a]
 
 union :: (Integral a, Show a) => Range a -> Range a -> Range a
-union other@(Range otherStart otherEnd otherGaps) myRange@(Range myStart myEnd myGaps)
-  | other == myRange = myRange
-  | otherStart == myStart && otherEnd == myEnd = Range myStart myEnd (foldMaybe union otherGaps myGaps)
-  | other `isWithin` myRange = Range myStart myEnd . foldMaybe union otherGaps . ((other `excludeFrom`) =<<) $ myGaps
-  | other `isOverlappingWith` myRange = Range (min otherStart myStart) (max otherEnd myEnd) (foldMaybe union otherGaps myGaps)
-  | other `isAdjacentOf` myRange = Range (min myStart otherStart) (max myEnd otherEnd) (foldMaybe union otherGaps myGaps)
-  | otherwise = replace (newGap `excludeFrom`) $ Range (min myStart otherStart) (max myEnd otherEnd) (foldMaybe union otherGaps myGaps)
-  where
-    newGap = Range (min myEnd otherEnd + 1) (max myStart otherStart - 1) Nothing
-
-intersect :: (Integral a, Show a) => Range a -> Range a -> Maybe (Range a)
-intersect other@(Range otherStart otherEnd otherGaps) myRange@(Range myStart myEnd myGaps)
-  | other == myRange = Just myRange
-  | other `isWithin` myRange = maybeSkip excludeFrom myGaps other
-  | myRange `isWithin` other = maybeSkip excludeFrom otherGaps myRange
-  | newStart <= newEnd = Just $ Range newStart newEnd (foldMaybe union otherGaps myGaps)
-  | otherwise = Nothing
-  where
-    newStart = max myStart otherStart
-    newEnd = min myEnd otherEnd
+union (Range other) (Range myRange) = Range (R.union myRange other)
 
 size :: (Integral a) => Range a -> a
-size Range {start = myStart, end = myEnd, gap = myGaps} =
-  (myEnd - myStart) + 1 - gapSize
-  where
-    gapSize = maybe 0 size myGaps
+size (Range ranges) = sum . map lengthOf $ ranges
 
-isAdjacentOf :: (Ord a, Num a) => Range a -> Range a -> Bool
-isAdjacentOf (Range otherStart otherEnd _) (Range myStart myEnd _) =
-  myEnd + 1 == otherStart || otherEnd + 1 == myStart
+lengthOf :: (Integral a) => R.Range a -> a
+lengthOf (R.SingletonRange _) = 1
+lengthOf (R.SpanRange start end) = (R.boundValue end) - (R.boundValue start + 1)
+lengthOf (R.LowerBoundRange _) = error "lengthOf LowerBoundRange is infinite"
+lengthOf (R.UpperBoundRange _) = error "lengthOf UpperBoundRange is infinite"
+lengthOf (R.InfiniteRange) = error "lengthOf InfiniteRange is infinite"
 
-isOverlappingWith :: Integral a => Range a -> Range a -> Bool
-isOverlappingWith Range {start = otherStart, end = otherEnd} Range {start = myStart, end = myEnd} =
-  myStart <= otherStart && otherStart <= myEnd || otherStart <= myStart && myStart <= otherEnd
+gap :: (Integral a, Show a) => Range a -> Maybe a
+gap (Range ranges)
+  | length ranges == 1 = Nothing
+  | otherwise = Just . (+ 1) . endOf . head $ ranges
 
-isLeadingIn :: Integral a => Range a -> Range a -> Bool
-isLeadingIn Range {start = otherStart, end = otherEnd} Range {start = myStart, end = myEnd} =
-  otherStart == myStart && otherEnd < myEnd
-
-isTrailingIn :: Integral a => Range a -> Range a -> Bool
-isTrailingIn Range {start = otherStart, end = otherEnd} Range {start = myStart, end = myEnd} =
-  otherEnd == myEnd && otherStart > myStart
-
-isWithin :: Integral a => Range a -> Range a -> Bool
-isWithin Range {start = otherStart, end = otherEnd} Range {start = myStart, end = myEnd} =
-  otherStart >= myStart && otherEnd <= myEnd
-
-withGap :: Range a -> Range a -> Range a
-withGap newGap (Range myStart myEnd _) = Range myStart myEnd $ Just newGap
+endOf :: R.Range a -> a
+endOf (R.SingletonRange a) = a
+endOf (R.SpanRange _ end) = R.boundValue end
+endOf (R.LowerBoundRange _) = error "endOf LowerBoundRange is infinite"
+endOf (R.UpperBoundRange end) = R.boundValue end
+endOf (R.InfiniteRange) = error "endOf InfiniteRange is infinite"

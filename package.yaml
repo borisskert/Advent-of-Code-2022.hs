@@ -23,6 +23,7 @@ dependencies:
 - utility-ht == 0.0.16
 - haskell-src-exts == 1.23.1
 - monad-extras == 0.6.0
+- range == 0.3.0.*
 
 ghc-options:
 - -Wall
