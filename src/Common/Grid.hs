@@ -39,6 +39,7 @@ module Common.Grid
     southWestOf,
     southEastOf,
     insert,
+    insertMissing,
     width,
     height,
     subgrid,
@@ -167,26 +168,16 @@ mapGrid fn (Grid size gridMap) = Grid size newGridMap
     newGridMap = BidirectionalMap.fromList . map (\(pos, x') -> (pos, fn pos x')) . BidirectionalMap.toList $ gridMap
 
 rows :: (Position p) => Grid p a -> [[p]]
-rows grid@(Grid (_, _) _) = map (\y' -> map (fromTuple . (,y')) [0 .. gridWidth - 1]) [0 .. gridHeight - 1]
-  where
-    gridHeight = height grid
-    gridWidth = width grid
+rows (Grid ((minX', maxX'), (minY', maxY')) _) = map (\y' -> map (fromTuple . (,y')) [minX' .. maxX']) [minY' .. maxY']
 
 columns :: (Position p) => Grid p a -> [[p]]
-columns grid@(Grid (_, _) _) = map (\x' -> map (fromTuple . (x',)) [0 .. gridHeight - 1]) [0 .. gridWidth - 1]
-  where
-    gridHeight = height grid
-    gridWidth = width grid
+columns (Grid ((minX', maxX'), (minY', maxY')) _) = map (\x' -> map (fromTuple . (x',)) [minY' .. maxY']) [minX' .. maxX']
 
 rowAt :: (Position p, Ord p) => Int -> Grid p a -> [(p, a)]
-rowAt y' grid = mapMaybe ((`lookupPair` grid) . fromTuple . (,y')) [0 .. gridWidth - 1]
-  where
-    gridWidth = width grid
+rowAt y' grid@(Grid ((minX', maxX'), _) _) = mapMaybe ((`lookupPair` grid) . fromTuple . (,y')) [minX' .. maxX']
 
 columnAt :: (Position p, Ord p) => Int -> Grid p a -> [(p, a)]
-columnAt x' grid = mapMaybe ((`lookupPair` grid) . fromTuple . (x',)) [0 .. gridHeight - 1]
-  where
-    gridHeight = height grid
+columnAt x' grid@(Grid (_, (minY', maxY')) _) = mapMaybe ((`lookupPair` grid) . fromTuple . (x',)) [minY' .. maxY']
 
 keys :: Grid p a -> [p]
 keys (Grid _ gridMap) = BidirectionalMap.keys gridMap
@@ -264,6 +255,11 @@ insert pos value (Grid ((minX', maxX'), (minY', maxY')) gridMap) = Grid (newWidt
 
 insertPair :: (Position p, Ord p, Ord a) => (p, a) -> Grid p a -> Grid p a
 insertPair (p, a) = insert p a
+
+insertMissing :: (Position p, Ord p, Ord a) => p -> a -> Grid p a -> Grid p a
+insertMissing pos value grid
+  | member pos grid = grid
+  | otherwise = insert pos value grid
 
 width :: Grid p a -> Int
 width (Grid ((minX', maxX'), _) _) = maxX' - minX' + 1

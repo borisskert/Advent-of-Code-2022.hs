@@ -1,16 +1,28 @@
 module Common.OctaGridPosition
   ( Position,
+    from,
     areAdjacent,
+    north,
+    south,
+    west,
+    east,
     stepsNorth,
     stepsSouth,
     stepsWest,
     stepsEast,
+    manhattanDistance,
+    withinManhattanDistance,
   )
 where
 
 import qualified Common.Grid as Grid (Position, adjacent, fromTuple, x, y)
+import Data.Set (Set)
+import qualified Data.Set as Set (fromList)
 
 data Position = Position Int Int deriving (Eq, Show, Ord)
+
+from :: Int -> Int -> Position
+from = Position
 
 instance Grid.Position Position where
   x (Position myX _) = myX
@@ -53,3 +65,18 @@ stepsEast steps pos = scanl (\p _ -> east p) pos [1 .. steps]
 
 stepsWest :: Int -> Position -> [Position]
 stepsWest steps pos = scanl (\p _ -> west p) pos [1 .. steps]
+
+manhattanDistance :: Position -> Position -> Int
+manhattanDistance (Position x y) (Position x' y') = abs (x - x') + abs (y - y')
+
+withinManhattanDistance :: Int -> Position -> Set Position
+withinManhattanDistance m pos = Set.fromList . concatMap columnAt $ xs
+  where
+    myX = Grid.x pos
+    myY = Grid.y pos
+    xs = [(myX - m) .. (myX + m)]
+
+    columnAt :: Int -> [Position]
+    columnAt x = (from x myY :) . concatMap (\y -> [from x (negate y + myY), from x (y + myY)]) $ [1 .. size]
+      where
+        size = m - abs (myX - x)

@@ -5,6 +5,7 @@ module Common.BidirectionalMap
     find,
     lookupKey,
     insert,
+    insertMissing,
     toList,
     fromList,
     keys,
@@ -16,7 +17,7 @@ where
 import Common.MultiMap (MultiMap)
 import qualified Common.MultiMap as MultiMap (empty, insert, lookup)
 import Data.Map (Map)
-import qualified Data.Map as Map (elems, empty, insert, keys, lookup, toList, member)
+import qualified Data.Map as Map (elems, empty, insert, keys, lookup, member, toList)
 import Data.Maybe (fromJust)
 import Prelude hiding (lookup)
 
@@ -48,6 +49,14 @@ insert k v (BidirectionalMap myMap myReverseMap) = BidirectionalMap newMap newRe
   where
     newMap = Map.insert k v myMap
     newReverseMap = MultiMap.insert v k myReverseMap
+
+insertMissing :: (Ord k, Ord v) => k -> v -> BidirectionalMap k v -> BidirectionalMap k v
+insertMissing pos value biMap@(BidirectionalMap myMap myReverseMap)
+  | Map.member pos myMap = biMap
+  | otherwise = BidirectionalMap newMap newReverseMap
+  where
+    newMap = Map.insert pos value myMap
+    newReverseMap = MultiMap.insert value pos myReverseMap
 
 keys :: BidirectionalMap k v -> [k]
 keys (BidirectionalMap myMap _) = Map.keys myMap

@@ -17,6 +17,10 @@ module Common.List
     minimumMaybe,
     zipWithIndex,
     range,
+    zigzag,
+    minimumMaximum,
+    minimumMaximumBy,
+    minimumMaximumOn,
   )
 where
 
@@ -124,3 +128,33 @@ range from to
   | from == to = [from]
   | from < to = [from .. to]
   | otherwise = [from, from - 1 .. to]
+
+-- Creates a zigzag pattern starting from the given point
+-- Example: zigzag 10 -> [10,11,9,12,8,13,7,14,6,15]
+zigzag :: Integral a => a -> [a]
+zigzag n = scanl (\x (sign, i) -> x + i * sign) n . zip signums $ [1 ..]
+  where
+    signums = cycle [1, -1]
+
+minimumMaximum :: (Ord a) => [a] -> (a, a)
+minimumMaximum [] = error "minimumMaximum: empty list"
+minimumMaximum [x] = (x, x)
+minimumMaximum (x : xs) = (min x minRest, max x maxRest)
+  where
+    (minRest, maxRest) = minimumMaximum xs
+
+minimumMaximumBy :: (a -> a -> Ordering) -> [a] -> (a, a)
+minimumMaximumBy _ [] = error "minimumMaximumBy: empty list"
+minimumMaximumBy _ [x] = (x, x)
+minimumMaximumBy cmpFn (x : xs) = (minX, maxX)
+  where
+    (minRest, maxRest) = minimumMaximumBy cmpFn xs
+    minX
+      | cmpFn x minRest == LT = x
+      | otherwise = minRest
+    maxX
+      | cmpFn x maxRest == GT = x
+      | otherwise = maxRest
+
+minimumMaximumOn :: (Ord b) => (a -> b) -> [a] -> (a, a)
+minimumMaximumOn fn = minimumMaximumBy (\a b -> compare (fn a) (fn b))
